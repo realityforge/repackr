@@ -1,0 +1,6 @@
+# DO NOT EDIT: File is auto-generated
+**/generated
+*.iml
+/*.ipr
+/*.iws
+/tmp
