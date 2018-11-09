@@ -43,3 +43,12 @@ def git_clone(category, name, repository_url, options = {})
   end
 end
 
+def load_next_patch_version(name)
+  require 'json'
+  filename = "#{WORKSPACE_DIR}/versions.json"
+  versions = JSON.parse(IO.read(filename))
+  versions[name] = (versions[name] || 1) + 1
+  IO.write(filename, JSON.pretty_generate(versions))
+  sh "git add #{filename}"
+  versions[name]
+end
