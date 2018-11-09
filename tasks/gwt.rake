@@ -40,5 +40,5 @@ task 'gwt:staging_deploy' do
   puts "\n\n\n\n\nPlease manually close and release staged repositories at https://oss.sonatype.org/index.html#stagingRepositories"
 end
 
-descr 'Download the latest gwt project and push a release'
+desc 'Download the latest gwt project and push a release'
 task 'gwt:release' => %w(gwt:download gwt:build gwt:local_deploy)
