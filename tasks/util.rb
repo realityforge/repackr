@@ -43,12 +43,27 @@ def git_clone(category, name, repository_url, options = {})
   end
 end
 
-def load_next_patch_version(name)
+def patch_version_json
   require 'json'
   filename = "#{WORKSPACE_DIR}/versions.json"
-  versions = JSON.parse(IO.read(filename))
-  versions[name] = (versions[name] || 1) + 1
-  IO.write(filename, JSON.pretty_generate(versions))
+  data = File.exist?(filename) ? JSON.parse(IO.read(filename)) : {}
+  result = yield data
+  IO.write(filename, JSON.pretty_generate(data) + "\n")
   sh "git add #{filename}"
-  versions[name]
+  result
+end
+
+def load_and_increment_patch_version(name)
+  patch_version_json do |data|
+    data[name] ||= {}
+    data[name]['version'] = (data[name]['version'] || 0) + 1
+    data[name]['version']
+  end
+end
+
+def record_commit_hash(name, commit)
+  patch_version_json do |data|
+    data[name] ||= {}
+    data[name]['commit'] = commit
+  end
 end

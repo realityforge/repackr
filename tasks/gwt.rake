@@ -19,6 +19,11 @@ end
 task 'gwt:download' do
   git_clone('gwt', 'tools', 'https://github.com/gwtproject/tools.git')
   git_clone('gwt', 'gwt', 'https://github.com/gwtproject/gwt.git')
+  commit_hash = nil
+  in_dir(product_path('gwt', 'gwt')) do
+    commit_hash = `git describe --tags --always`.strip
+  end
+  record_commit_hash('gwt', commit_hash)
 end
 
 task 'gwt:build' do
@@ -28,13 +33,13 @@ task 'gwt:build' do
 end
 
 task 'gwt:local_deploy' do
-  patch_version = load_next_patch_version('gwt')
+  patch_version = load_and_increment_patch_version('gwt')
   repository_url = "file://#{product_path('gwt', 'repository')}"
   deploy_gwt(repository_url, patch_version, 'local')
 end
 
 task 'gwt:staging_deploy' do
-  patch_version = load_next_patch_version('gwt')
+  patch_version = load_and_increment_patch_version('gwt')
   repository_url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
   deploy_gwt(repository_url, patch_version, 'sonatype-nexus-staging')
   puts "\n\n\n\n\nPlease manually close and release staged repositories at https://oss.sonatype.org/index.html#stagingRepositories"

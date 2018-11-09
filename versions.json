@@ -1,3 +1,6 @@
 {
-  "gwt": 1
+  "gwt": {
+    "version": 1,
+    "commit": "771115c"
+  }
 }
