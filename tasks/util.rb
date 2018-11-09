@@ -1,3 +1,5 @@
+require 'json'
+
 WORKSPACE_DIR = File.expand_path(File.dirname(__FILE__) + '/..')
 
 def in_dir(dir)
@@ -11,6 +13,8 @@ def in_dir(dir)
 end
 
 REPOSITORY_DIR = "#{WORKSPACE_DIR}/projects"
+
+VERSIONS_FILE = "#{WORKSPACE_DIR}/versions.json"
 
 def category_path(category)
   "#{REPOSITORY_DIR}/#{category}"
@@ -43,13 +47,16 @@ def git_clone(category, name, repository_url, options = {})
   end
 end
 
+def load_version_data(name)
+  data = File.exist?(VERSIONS_FILE) ? JSON.parse(IO.read(VERSIONS_FILE)) : {}
+  data[name] || {}
+end
+
 def patch_version_json
-  require 'json'
-  filename = "#{WORKSPACE_DIR}/versions.json"
-  data = File.exist?(filename) ? JSON.parse(IO.read(filename)) : {}
+  data = File.exist?(VERSIONS_FILE) ? JSON.parse(IO.read(VERSIONS_FILE)) : {}
   result = yield data
-  IO.write(filename, JSON.pretty_generate(data) + "\n")
-  sh "git add #{filename}"
+  IO.write(VERSIONS_FILE, JSON.pretty_generate(data) + "\n")
+  sh "git add #{VERSIONS_FILE}"
   result
 end
 
