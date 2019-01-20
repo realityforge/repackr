@@ -56,7 +56,9 @@ def patch_version_json
   data = File.exist?(VERSIONS_FILE) ? JSON.parse(IO.read(VERSIONS_FILE)) : {}
   result = yield data
   IO.write(VERSIONS_FILE, JSON.pretty_generate(data) + "\n")
-  sh "git add #{VERSIONS_FILE}"
+  in_dir(WORKSPACE_DIR) do
+    sh "git add #{VERSIONS_FILE}"
+  end
   result
 end
 
