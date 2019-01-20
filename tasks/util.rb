@@ -91,3 +91,7 @@ def get_version_suffix(name)
   commit_hash = load_version_data(name)['commit']
   "p#{patch_version}-#{commit_hash}"
 end
+
+def dist_dir(name)
+  "#{WORKSPACE_DIR}/dist/#{name}"
+end
