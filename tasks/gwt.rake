@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/util')
 
-def deploy_gwt(repository_url, patch_version, commit_hash, repo_id)
+def deploy_gwt(repository_url, repo_id)
   in_dir(product_path('gwt', 'gwt')) do
     sh 'git reset --hard'
     Dir['maven/poms/**/*.xml'].each do |filename|
@@ -12,7 +12,8 @@ def deploy_gwt(repository_url, patch_version, commit_hash, repo_id)
       IO.write(filename, content)
     end
     IO.write('maven/push-gwt.sh', IO.read('maven/push-gwt.sh').gsub(/^read/, '#read'))
-    sh "GWT_MAVEN_REPO_ID=#{repo_id} GWT_VERSION=2.8.2-p#{patch_version}-#{commit_hash} GWT_MAVEN_REPO_URL=#{repository_url} JSINTEROP_VERSION=1.0.2-p#{patch_version}-#{commit_hash} GWT_GPG_PASS=#{ENV['GPG_PASS']} GWT_DIST_FILE= ./maven/push-gwt.sh"
+    version_suffix = get_version_suffix('gwt')
+    sh "GWT_MAVEN_REPO_ID=#{repo_id} GWT_VERSION=2.8.2-#{version_suffix} GWT_MAVEN_REPO_URL=#{repository_url} JSINTEROP_VERSION=1.0.2-#{version_suffix} GWT_GPG_PASS=#{ENV['GPG_PASS']} GWT_DIST_FILE= ./maven/push-gwt.sh"
   end
 end
 
@@ -33,17 +34,11 @@ task 'gwt:build' do
 end
 
 task 'gwt:local_deploy' do
-  patch_version = load_and_increment_patch_version('gwt')
-  commit_hash = load_version_data('gwt')['commit']
-  repository_url = "file://#{product_path('gwt', 'repository')}"
-  deploy_gwt(repository_url, patch_version, commit_hash, 'local')
+  deploy_gwt("file://#{product_path('gwt', 'repository')}", 'local')
 end
 
 task 'gwt:staging_deploy' do
-  patch_version = load_and_increment_patch_version('gwt')
-  commit_hash = load_version_data('gwt')['commit']
-  repository_url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
-  deploy_gwt(repository_url, patch_version, commit_hash, 'sonatype-nexus-staging')
+  deploy_gwt('https://oss.sonatype.org/service/local/staging/deploy/maven2', 'sonatype-nexus-staging')
   puts "\n\n\n\n\nPlease manually close and release staged repositories at https://oss.sonatype.org/index.html#stagingRepositories"
 end
 

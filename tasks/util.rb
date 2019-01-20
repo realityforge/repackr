@@ -74,3 +74,9 @@ def record_commit_hash(name, commit)
     data[name]['commit'] = commit
   end
 end
+
+def get_version_suffix(name)
+    patch_version = load_and_increment_patch_version(name)
+  commit_hash = load_version_data(name)['commit']
+  "p#{patch_version}-#{commit_hash}"
+end
