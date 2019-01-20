@@ -69,10 +69,15 @@ def load_and_increment_patch_version(name)
 end
 
 def record_commit_hash(name, commit)
+  commit_changed = false
   patch_version_json do |data|
     data[name] ||= {}
-    data[name]['commit'] = commit
+    if data[name]['commit'] != commit
+      data[name]['commit'] = commit
+      commit_changed
+    end
   end
+  commit_changed
 end
 
 def get_version_suffix(name)
