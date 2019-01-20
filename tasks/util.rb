@@ -42,7 +42,7 @@ def git_clone(category, name, repository_url, options = {})
   else
     puts "Local directory #{local_dir} does not exist. Performing clone..."
     in_dir(category_dir) do
-      sh "git clone#{limit_clone_depth ? ' --depth 1' : ''} #{repository_url} #{name}"
+      sh "git clone#{limit_clone_depth ? ' --depth 1' : ''} --branch #{branch} #{repository_url} #{name}"
     end
   end
 end
