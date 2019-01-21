@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/util')
 
 ELEMENTAL2_GROUP_ID = 'org.realityforge.com.google.elemental2'
 ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage)
-ELEMENTAL2_BRANCH = 'FixAbortType'
+ELEMENTAL2_BRANCH = 'integration'
 
 def elemental2_version
   "1.0.0-rf-#{get_version_suffix('elemental2')}"
