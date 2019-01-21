@@ -48,10 +48,10 @@ task 'elemental2:build' do
   product_path = product_path('jsinterop', 'elemental2')
   in_dir(product_path) do
     version = elemental2_version
-    sh 'bazel clean --expunge' unless ENV['BAZEL'] = 'no'
+    sh 'bazel clean --expunge' unless ENV['BAZEL'] == 'no'
     ELEMENTAL2_MODULES.each do |artifact_key|
-      sh "bazel build //java/elemental2/#{artifact_key}:lib#{artifact_key}.jar" unless ENV['BAZEL'] = 'no'
-      sh "bazel build //java/elemental2/#{artifact_key}:lib#{artifact_key}-src.jar" unless ENV['BAZEL'] = 'no'
+      sh "bazel build //java/elemental2/#{artifact_key}:lib#{artifact_key}.jar" unless ENV['BAZEL'] == 'no'
+      sh "bazel build //java/elemental2/#{artifact_key}:lib#{artifact_key}-src.jar" unless ENV['BAZEL'] == 'no'
       artifact_path = "bazel-bin/java/elemental2/#{artifact_key}"
       unpack_dir = "#{WORKSPACE_DIR}/target/elemental2/#{artifact_key}"
       src_dir = "#{unpack_dir}/src"
