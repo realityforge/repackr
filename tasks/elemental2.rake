@@ -54,6 +54,21 @@ task 'elemental2:build' do
       sh "bazel build //java/elemental2/#{artifact_key}:lib#{artifact_key}.jar"
       sh "bazel build //java/elemental2/#{artifact_key}:lib#{artifact_key}-src.jar"
       artifact_path = "bazel-bin/java/elemental2/#{artifact_key}"
+      unpack_dir = "#{WORKSPACE_DIR}/target/elemental2/#{artifact_key}"
+      src_dir = "#{unpack_dir}/src"
+      javadoc_dir = "#{unpack_dir}/doc"
+      mkdir_p src_dir
+      mkdir_p javadoc_dir
+      in_dir(src_dir)do
+      sh "jar -xf #{product_path}/#{artifact_path}/lib#{artifact_key}-src.jar"
+      end
+      sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
+
+      javadocs_artifact = elemental2_output_artifact(artifact_key, :javadocs)
+      mkdir_p File.dirname(javadocs_artifact)
+      sh "jar -cf #{javadocs_artifact} -C #{src_dir}/ ."
+
+      rm_rf "#{WORKSPACE_DIR}/target"
 
       source_artifact = elemental2_output_artifact(artifact_key, :sources)
       mkdir_p File.dirname(source_artifact)
