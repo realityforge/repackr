@@ -59,8 +59,8 @@ task 'elemental2:build' do
       javadoc_dir = "#{unpack_dir}/doc"
       mkdir_p src_dir
       mkdir_p javadoc_dir
-      in_dir(src_dir)do
-      sh "jar -xf #{product_path}/#{artifact_path}/lib#{artifact_key}-src.jar"
+      in_dir(src_dir) do
+        sh "jar -xf #{product_path}/#{artifact_path}/lib#{artifact_key}-src.jar"
       end
       sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
 
