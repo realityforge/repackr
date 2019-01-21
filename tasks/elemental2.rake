@@ -108,6 +108,10 @@ task 'elemental2:build' do
   </issueManagement>
 
   <developers>
+    <developer>
+      <id>elemental2</id>
+      <name>The Elemental2 Developers</name>
+    </developer>
   </developers>
       POM_XML
 
