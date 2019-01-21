@@ -1,4 +1,5 @@
 require 'json'
+require 'mcrt'
 
 WORKSPACE_DIR = File.expand_path(File.dirname(__FILE__) + '/..')
 
@@ -94,4 +95,48 @@ end
 
 def dist_dir(name)
   "#{WORKSPACE_DIR}/dist/#{name}"
+end
+
+class RepackrMavenCentralReleaseTool
+  class << self
+    def define_publish_tasks(name, options = {}, &block)
+      desc "Publish #{name} release on maven central"
+      task "#{name}:publish" do
+        profile_name = options[:profile_name] || (raise ':profile_name not specified when defining tasks')
+        username = options[:username] || (raise ':username name not specified when defining tasks')
+        password = options[:password] || ENV['MAVEN_CENTRAL_PASSWORD'] || (raise "Unable to locate environment variable with name 'MAVEN_CENTRAL_PASSWORD'")
+        RepackrMavenCentralReleaseTool.perform_buildr_release(profile_name, username, password, &block)
+      end
+    end
+
+    def perform_buildr_release(profile_name, username, password, &block)
+      release_to_url = Buildr.repositories.release_to[:url]
+      release_to_username = Buildr.repositories.release_to[:username]
+      release_to_password = Buildr.repositories.release_to[:password]
+
+      begin
+        Buildr.repositories.release_to[:url] = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+        Buildr.repositories.release_to[:username] = username
+        Buildr.repositories.release_to[:password] = password
+
+        r = MavenCentralReleaseTool.new
+        r.username = username
+        r.password = password
+        r.user_agent = "Buildr-#{Buildr::VERSION}"
+        while r.get_staging_repositories(profile_name, false).size != 0
+          puts 'Another project currently staging. Waiting for other repository to complete. Please visit the website https://oss.sonatype.org/index.html#stagingRepositories to view the other staging attempts.'
+          sleep 1
+        end
+        puts "Beginning upload to staging repository #{profile_name}"
+
+        yield block
+
+        r.release_sole_auto_staging(profile_name)
+      ensure
+        Buildr.repositories.release_to[:url] = release_to_url
+        Buildr.repositories.release_to[:username] = release_to_username
+        Buildr.repositories.release_to[:password] = release_to_password
+      end
+    end
+  end
 end
