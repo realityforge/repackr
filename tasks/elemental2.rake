@@ -12,7 +12,7 @@ def elemental2_output_artifact(artifact_key, type = :jar)
   version = elemental2_version
   artifact_id = "elemental2-#{artifact_key}"
   file_id = "#{artifact_id}-#{version}"
-  filename = type == :sources ? "#{file_id}-sources.jar" : type == :pom ? "#{file_id}.pom" : "#{file_id}.jar"
+  filename = type == :javadocs ? "#{file_id}-javadocs.jar" : type == :sources ? "#{file_id}-sources.jar" : type == :pom ? "#{file_id}.pom" : "#{file_id}.jar"
   "#{dist_dir('elemental2')}/#{ELEMENTAL2_GROUP_ID.gsub('.', '/')}/#{artifact_id}/#{version}/#{filename}"
 end
 
