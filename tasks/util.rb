@@ -36,8 +36,8 @@ def git_clone(category, name, repository_url, options = {})
     puts "Local directory #{local_dir} exists. Performing fetch..."
     in_dir(local_dir) do
       sh 'git clean -f -d -x'
-      sh "git checkout #{branch}"
       sh 'git fetch --prune'
+      sh "git checkout #{branch}"
       sh "git reset --hard origin/#{branch}"
     end
   else
