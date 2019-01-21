@@ -2,5 +2,9 @@
   "gwt": {
     "version": 1,
     "commit": "771115c"
+  },
+  "elemental2": {
+    "commit": "7effcee",
+    "version": 1
   }
 }
