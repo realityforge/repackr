@@ -93,14 +93,18 @@ end
 
 task 'elemental2:install' do
   tasks_for_modules.each do |task|
-    task.uninstall
-    task.install
+    in_local_repository = Buildr.repositories.locate(task)
+    rm_f in_local_repository
+    mkdir_p File.dirname(in_local_repository)
+    cp task.name, in_local_repository, :preserve => false
+    info "Installed #{task.name} to #{in_local_repository}"
   end
 end
 
 RepackrMavenCentralReleaseTool.define_publish_tasks('elemental2',
                                                     :profile_name => 'org.realityforge',
                                                     :username => 'realityforge') do
+  task('elemental2:install').invoke
   tasks_for_modules.each(&:upload)
 end
 
