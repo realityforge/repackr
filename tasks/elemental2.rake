@@ -8,11 +8,10 @@ def elemental2_version
   "1.0.0-rf-#{get_version_suffix('elemental2')}"
 end
 
-def elemental2_output_artifact(artifact_key, type = :jar)
+def elemental2_output_artifact(artifact_key, type = :jar, classifier = nil)
   version = elemental2_version
   artifact_id = "elemental2-#{artifact_key}"
-  file_id = "#{artifact_id}-#{version}"
-  filename = type == :javadocs ? "#{file_id}-javadocs.jar" : type == :sources ? "#{file_id}-sources.jar" : type == :pom ? "#{file_id}.pom" : "#{file_id}.jar"
+  filename = "#{artifact_id}-#{version}#{classifier.nil? ? '' : "-#{classifier}"}.#{type}"
   "#{dist_dir('elemental2')}/#{ELEMENTAL2_GROUP_ID.gsub('.', '/')}/#{artifact_id}/#{version}/#{filename}"
 end
 
@@ -64,17 +63,18 @@ task 'elemental2:build' do
       end
       sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
 
-      javadocs_artifact = elemental2_output_artifact(artifact_key, :javadocs)
+      javadocs_artifact = elemental2_output_artifact(artifact_key, :jar, :javadocs)
       mkdir_p File.dirname(javadocs_artifact)
       sh "jar -cf #{javadocs_artifact} -C #{src_dir}/ ."
 
       rm_rf "#{WORKSPACE_DIR}/target"
 
-      source_artifact = elemental2_output_artifact(artifact_key, :sources)
+      source_artifact = elemental2_output_artifact(artifact_key, :jar, :sources)
       mkdir_p File.dirname(source_artifact)
       cp "#{artifact_path}/lib#{artifact_key}-src.jar", source_artifact
 
-      task = Buildr::ZipTask.define_task(elemental2_output_artifact(artifact_key)).tap do |zip|
+      jar_artifact = elemental2_output_artifact(artifact_key, :jar)
+      task = Buildr::ZipTask.define_task(jar_artifact).tap do |zip|
         zip.merge("#{artifact_path}/lib#{artifact_key}.jar")
         zip.merge("#{artifact_path}/lib#{artifact_key}-src.jar")
       end
@@ -111,23 +111,38 @@ task 'elemental2:build' do
   </developers>
       POM_XML
 
-      IO.write(elemental2_output_artifact(artifact_key, :pom), pom)
+      pom_artifact = elemental2_output_artifact(artifact_key, :pom)
+      IO.write(pom_artifact, pom)
+
+      sign_task(pom_artifact)
+      sign_task(jar_artifact)
+      sign_task(javadocs_artifact)
+      sign_task(source_artifact)
     end
   end
 end
 
-def tasks_for_modules
-  version = elemental2_version
+def artifact_def(artifact_key, type, classifier = nil)
+  puts "artifact_def(#{artifact_key}, #{type}, #{classifier}) => #{elemental2_output_artifact(artifact_key, type, classifier)}"
+  Buildr.artifact({ :group => ELEMENTAL2_GROUP_ID,
+                    :id => "elemental2-#{artifact_key}",
+                    :version => elemental2_version,
+                    :type => type,
+                    :classifier => classifier }).
+    from(elemental2_output_artifact(artifact_key, type, classifier))
+end
 
+def tasks_for_modules
   tasks = []
   ELEMENTAL2_MODULES.each do |artifact_key|
-    id = "elemental2-#{artifact_key}"
-    Buildr.artifact({ :group => ELEMENTAL2_GROUP_ID, :id => id, :version => version, :type => :pom },
-                    elemental2_output_artifact(artifact_key, :pom))
-    tasks << Buildr.artifact({ :group => ELEMENTAL2_GROUP_ID, :id => id, :version => version, :type => :jar },
-                             elemental2_output_artifact(artifact_key, :jar))
-    tasks << Buildr.artifact({ :group => ELEMENTAL2_GROUP_ID, :id => id, :version => version, :classifier => :sources, :type => :jar },
-                             elemental2_output_artifact(artifact_key, :sources))
+    tasks << artifact_def(artifact_key, :pom)
+    tasks << artifact_def(artifact_key, 'pom.asc')
+    tasks << artifact_def(artifact_key, :jar)
+    tasks << artifact_def(artifact_key, 'jar.asc')
+    tasks << artifact_def(artifact_key, :jar, :sources)
+    tasks << artifact_def(artifact_key, 'jar.asc', :sources)
+    tasks << artifact_def(artifact_key, :jar, :javadocs)
+    tasks << artifact_def(artifact_key, 'jar.asc', :javadocs)
   end
 
   tasks
