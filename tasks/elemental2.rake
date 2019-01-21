@@ -46,7 +46,8 @@ end
 task 'elemental2:build' do
   output_dir = dist_dir('elemental2')
   rm_rf output_dir
-  in_dir(product_path('jsinterop', 'elemental2')) do
+  product_path = product_path('jsinterop', 'elemental2')
+  in_dir(product_path) do
     version = elemental2_version
     sh 'bazel clean --expunge'
     ELEMENTAL2_MODULES.each do |artifact_key|
