@@ -84,14 +84,13 @@ def record_branch(name, branch)
 end
 
 def record_attribute(name, key, value)
+  data = load_version_data(name)
+  return false if data.include?(key) && data[key] == value
   patch_version_json do |data|
-    data[name] ||= {}
-    if data[name][key] != value
-      data[name][key] = value
-      return true
-    end
+    (data[name] ||= {})[key] = value
+    data
   end
-  false
+  true
 end
 
 def get_version_suffix(name)
