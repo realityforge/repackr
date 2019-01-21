@@ -4,7 +4,8 @@
     "commit": "771115c"
   },
   "elemental2": {
-    "commit": "7effcee",
-    "version": 5
+    "commit": "095e529",
+    "version": 13,
+    "branch": "integration"
   }
 }
