@@ -27,7 +27,7 @@ end
 
 def git_clone(category, name, repository_url, options = {})
   branch = options[:branch] || 'master'
-  limit_clone_depth = options[:limit_clone_depth].nil? ? true : !!options[:limit_clone_depth]
+  limit_clone_depth = options[:limit_clone_depth].nil? ? false : !!options[:limit_clone_depth]
   category_dir = category_path(category)
   FileUtils.mkdir_p category_dir
   local_dir = product_path(category, name)
