@@ -84,7 +84,33 @@ task 'elemental2:build' do
         IO.read("maven/pom-#{artifact_key}.xml").
           gsub('__GROUP_ID__', ELEMENTAL2_GROUP_ID).
           gsub('__VERSION__', version).
-          gsub('__ARTIFICAT_ID__', "elemental2-#{artifact_key}")
+          gsub('__ARTIFICAT_ID__', "elemental2-#{artifact_key}").
+          gsub("  <url>https://www.gwtproject.org</url>\n", <<-POM_XML)
+  <url>https://www.gwtproject.org</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:google/elemental2.git</connection>
+    <developerConnection>scm:git:git@github.com:google/elemental2.git</developerConnection>
+    <url>git@github.com:google/elemental2.git</url>
+  </scm>
+
+  <issueManagement>
+    <url>https://github.com/google/elemental2/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <developers>
+  </developers>
+      POM_XML
+
       IO.write(elemental2_output_artifact(artifact_key, :pom), pom)
     end
   end
