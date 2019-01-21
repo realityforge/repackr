@@ -63,7 +63,7 @@ task 'elemental2:build' do
       end
       sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
 
-      javadocs_artifact = elemental2_output_artifact(artifact_key, :jar, :javadocs)
+      javadocs_artifact = elemental2_output_artifact(artifact_key, :jar, :javadoc)
       mkdir_p File.dirname(javadocs_artifact)
       sh "jar -cf #{javadocs_artifact} -C #{src_dir}/ ."
 
@@ -145,8 +145,8 @@ def tasks_for_modules
     tasks << artifact_def(artifact_key, 'jar.asc')
     tasks << artifact_def(artifact_key, :jar, :sources)
     tasks << artifact_def(artifact_key, 'jar.asc', :sources)
-    tasks << artifact_def(artifact_key, :jar, :javadocs)
-    tasks << artifact_def(artifact_key, 'jar.asc', :javadocs)
+    tasks << artifact_def(artifact_key, :jar, :javadoc)
+    tasks << artifact_def(artifact_key, 'jar.asc', :javadoc)
   end
 
   tasks
