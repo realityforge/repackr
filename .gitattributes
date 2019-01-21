@@ -1,6 +1,11 @@
 # DO NOT EDIT: File is auto-generated
 * -text
+*.json text
+*.md text
+*.rake text
+*.rb text
 .gitattributes text
 .gitignore text
 .ruby-version text
 Gemfile text
+buildfile text
