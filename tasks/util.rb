@@ -76,15 +76,22 @@ def load_and_increment_patch_version(name)
 end
 
 def record_commit_hash(name, commit)
-  commit_changed = false
+  record_attribute(name, 'commit', commit)
+end
+
+def record_branch(name, branch)
+  record_attribute(name, 'branch', branch)
+end
+
+def record_attribute(name, key, value)
   patch_version_json do |data|
     data[name] ||= {}
-    if data[name]['commit'] != commit
-      data[name]['commit'] = commit
-      commit_changed
+    if data[name][key] != value
+      data[name][key] = value
+      return true
     end
   end
-  commit_changed
+  false
 end
 
 def get_version_suffix(name)

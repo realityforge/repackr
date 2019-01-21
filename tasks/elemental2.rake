@@ -2,6 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/util')
 
 ELEMENTAL2_GROUP_ID = 'org.realityforge.com.google.elemental2'
 ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage)
+ELEMENTAL2_BRANCH = 'FixAbortType'
 
 def elemental2_version
   "1.0.0-rf-#{get_version_suffix('elemental2')}"
@@ -16,11 +17,12 @@ def elemental2_output_artifact(artifact_key, type = :jar)
 end
 
 task 'elemental2:download' do
-  git_clone('jsinterop', 'elemental2', 'https://github.com/realityforge/elemental2.git', :branch => 'upstream')
+  git_clone('jsinterop', 'elemental2', 'https://github.com/realityforge/elemental2.git', :branch => ELEMENTAL2_BRANCH)
   commit_hash = nil
   in_dir(product_path('jsinterop', 'elemental2')) do
     commit_hash = `git describe --tags --always`.strip
   end
+  record_branch('elemental2', ELEMENTAL2_BRANCH)
   if record_commit_hash('elemental2', commit_hash)
     load_and_increment_patch_version('elemental2')
   end
