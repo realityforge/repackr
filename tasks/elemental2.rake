@@ -162,7 +162,7 @@ RepackrMavenCentralReleaseTool.define_publish_tasks('elemental2',
                                                     :profile_name => 'org.realityforge',
                                                     :username => 'realityforge') do
   task('elemental2:install').invoke
-  tasks_for_modules.each(&:upload)
+  tasks_for_modules.select{|t|t.type != :pom}.each(&:upload)
 end
 
 desc 'Download the latest elemental2 project and push a local release'
