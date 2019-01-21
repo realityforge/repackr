@@ -153,7 +153,7 @@ task 'elemental2:install' do
     in_local_repository = Buildr.repositories.locate(task)
     rm_f in_local_repository
     mkdir_p File.dirname(in_local_repository)
-    cp task.name, in_local_repository, :preserve => false
+    cp task.instance_variable_get('@from'), in_local_repository, :preserve => false
     info "Installed #{task.name} to #{in_local_repository}"
   end
 end
