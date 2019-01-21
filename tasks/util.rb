@@ -146,3 +146,26 @@ class RepackrMavenCentralReleaseTool
     end
   end
 end
+
+def sign_task(filename)
+  raise "ENV['GPG_USER'] not specified" unless ENV['GPG_USER']
+  asc_filename = "#{filename}.asc"
+
+  cmd = []
+  cmd << 'gpg'
+  cmd << '--local-user'
+  cmd << ENV['GPG_USER']
+  cmd << '--armor'
+  cmd << '--output'
+  cmd << asc_filename
+  if ENV['GPG_PASS']
+    cmd << '--passphrase'
+    cmd << ENV['GPG_PASS']
+  end
+  cmd << '--detach-sig'
+  cmd << '--batch'
+  cmd << '--yes'
+  cmd << filename
+  `#{cmd.join(' ')}`
+  raise "Unable to generate signature for #{pkg}" unless File.exist?(asc_filename)
+end
