@@ -238,7 +238,8 @@ Peter Donald
   File.open 'emails/elemental2-email.txt', 'w' do |file|
     file.write email
   end
-  #
+  puts 'Announce email template in emails/elemental2-email.txt'
+  puts email
 end
 
 desc 'Download the latest elemental2 project and push a local release'
