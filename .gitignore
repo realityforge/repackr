@@ -3,6 +3,7 @@
 *.iml
 /*.ipr
 /*.iws
+/emails
 /dist
 /projects
 /target

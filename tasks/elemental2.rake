@@ -171,8 +171,78 @@ RepackrMavenCentralReleaseTool.define_publish_tasks('elemental2',
   tasks_for_modules.select {|t| t.type != :pom}.each(&:upload)
 end
 
+task 'elemental2:save_build' do
+  sh "git reset"
+  sh "git add versions.json"
+  sh "git commit -m \"Release the #{elemental2_version} version of the elemental2 project\""
+  sh "git tag elemental2-#{elemental2_version}"
+  sh "git push origin elemental2-#{elemental2_version}"
+end
+
+task 'elemental2:generate_email' do
+  email = <<-EMAIL
+To: google-web-toolkit@googlegroups.com
+Subject: [ANNOUNCE] (Unofficial) Elemental2 #{elemental2_version} packages published to Maven Central
+
+Elemental2 provides type checked access to browser APIs for Java
+code. This is done by using closure extern files and generating
+JsTypes, which are part of the new JsInterop specification that
+is both implemented in GWT and J2CL.
+
+The official Elemental2 project is available via
+
+https://github.com/google/elemental2
+
+The Elemental2 project does not yet provide regular releases but
+is evolving as the underlying Closure compiler externs evolve and
+this can make it difficult to adopt Elemental2 in more traditional
+build systems.
+
+Until regular Elemental2 releases start occurring, I have decided
+to periodically publish versions of Elemental2 artifacts to maven
+central. To avoid conflicts with the official releases the groupId
+of the artifacts are prefixed with "org.realityforge." and artifacts
+use different versions.
+
+This is completely unofficial so please don't bug the original
+Elemental2 authors. A new version will be released when I need a
+feature present in newer externs or when I am explicitly asked.
+
+The Maven dependencies published can be added to your pom.xml via
+
+    <dependency>
+      <groupId>org.realityforge.com.google.elemental2</groupId>
+      <artifactId>${artifact-id}</artifactId>
+      <version>#{elemental2_version}</version>
+    </dependency>
+
+where artifact-id is one of
+
+* elemental2-core
+* elemental2-dom
+* elemental2-promise
+* elemental2-indexeddb
+* elemental2-svg
+* elemental2-webgl
+* elemental2-media
+* elemental2-webstorage
+
+To see how these artifacts are published see:
+https://github.com/realityforge/repackr
+
+Hope it helps someone,
+
+Peter Donald
+  EMAIL
+  mkdir_p 'emails'
+  File.open 'emails/elemental2-email.txt', 'w' do |file|
+    file.write email
+  end
+  #
+end
+
 desc 'Download the latest elemental2 project and push a local release'
 task 'elemental2:local_release' => %w(elemental2:download elemental2:patch elemental2:build elemental2:install)
 
 desc 'Download the latest elemental2 project and push a release to Maven Central'
-task 'elemental2:release' => %w(elemental2:download elemental2:patch elemental2:build elemental2:publish)
+task 'elemental2:release' => %w(elemental2:download elemental2:patch elemental2:build elemental2:publish elemental2:save_build elemental2:generate_email)
