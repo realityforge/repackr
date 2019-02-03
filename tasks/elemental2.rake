@@ -5,7 +5,7 @@ ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage)
 ELEMENTAL2_BRANCH = 'integration'
 
 def elemental2_version
-  "1.0.0-rf-#{get_version_suffix('elemental2')}"
+  "1.0.0-#{get_version_suffix('elemental2')}"
 end
 
 def elemental2_output_artifact(artifact_key, type = :jar, classifier = nil)
