@@ -174,5 +174,5 @@ end
 desc 'Download the latest elemental2 project and push a local release'
 task 'elemental2:local_release' => %w(elemental2:download elemental2:patch elemental2:build elemental2:install)
 
-desc 'Download the latest gwt project and push a release'
+desc 'Download the latest elemental2 project and push a release to Maven Central'
 task 'elemental2:release' => %w(elemental2:download elemental2:patch elemental2:build elemental2:publish)
