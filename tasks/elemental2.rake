@@ -19,6 +19,8 @@ task 'elemental2:download' do
   git_clone('jsinterop', 'elemental2', 'https://github.com/realityforge/elemental2.git', :branch => ELEMENTAL2_BRANCH)
   commit_hash = nil
   in_dir(product_path('jsinterop', 'elemental2')) do
+    sh "git fetch --prune"
+    sh "git reset --hard origin/#{ELEMENTAL2_BRANCH}"
     commit_hash = `git describe --tags --always`.strip
   end
   record_branch('elemental2', ELEMENTAL2_BRANCH)
@@ -29,7 +31,7 @@ end
 
 task 'elemental2:patch' do
   in_dir(product_path('jsinterop', 'elemental2')) do
-    sh 'git reset --hard'
+    sh "git reset --hard origin/#{ELEMENTAL2_BRANCH}"
     new_content =
       IO.read('release_elemental.sh').
         gsub(/^read -s gpg_passphrase/, '#set gpg_passphrase=""').
