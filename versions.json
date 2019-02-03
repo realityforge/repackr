@@ -1,11 +1,11 @@
 {
   "gwt": {
-    "version": 1,
+    "buildNumber": 1,
     "commit": "771115c"
   },
   "elemental2": {
     "commit": "2f97dbe",
-    "version": 14,
+    "buildNumber": 14,
     "branch": "integration"
   }
 }

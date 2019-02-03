@@ -25,7 +25,7 @@ task 'elemental2:download' do
   end
   record_branch('elemental2', ELEMENTAL2_BRANCH)
   if record_commit_hash('elemental2', commit_hash)
-    load_and_increment_patch_version('elemental2')
+    load_and_increment_build_number('elemental2')
   end
 end
 

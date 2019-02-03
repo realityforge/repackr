@@ -63,15 +63,15 @@ def patch_version_json
   result
 end
 
-def load_patch_version(name)
-  load_version_data(name)['version'] || (raise "Unable to locate version data for #{name}")
+def load_build_number(name)
+  load_version_data(name)['buildNumber'] || (raise "Unable to locate version data for #{name}")
 end
 
-def load_and_increment_patch_version(name)
+def load_and_increment_build_number(name)
   patch_version_json do |data|
     data[name] ||= {}
-    data[name]['version'] = (data[name]['version'] || 0) + 1
-    data[name]['version']
+    data[name]['buildNumber'] = (data[name]['buildNumber'] || 0) + 1
+    data[name]['buildNumber']
   end
 end
 
@@ -94,9 +94,9 @@ def record_attribute(name, key, value)
 end
 
 def get_version_suffix(name)
-  patch_version = load_patch_version(name)
+  patch_version = load_build_number(name)
   commit_hash = load_version_data(name)['commit']
-  "p#{patch_version}-#{commit_hash}"
+  "b#{patch_version}-#{commit_hash}"
 end
 
 def dist_dir(name)
