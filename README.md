@@ -24,4 +24,4 @@ i.e. if the original Maven coordinates for an artifact are:
 
 Then a coordinate for a release could be
 
-    org.realityforge.com.google.elemental2:elemental2-webstorage:jar:1.0.0-b14-2f97dbe
+    org.realityforge.com.google.elemental2:elemental2-webstorage:jar:1.0.0-b15-7a28038
