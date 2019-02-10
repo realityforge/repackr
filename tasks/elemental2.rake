@@ -3,9 +3,15 @@ require File.expand_path(File.dirname(__FILE__) + '/util')
 ELEMENTAL2_GROUP_ID = 'org.realityforge.com.google.elemental2'
 ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage)
 ELEMENTAL2_BRANCH = 'integration'
+ELEMENTAL2_BRANCHES_TO_MERGE = %w(WebAssembly)
+ELEMENTAL2_UPDATE_UPSTREAM = true
 
 def elemental2_version
   "1.0.0-#{get_version_suffix('elemental2')}"
+end
+
+def elemental2_integration_branch
+  "integration-b#{load_build_number('elemental2')}"
 end
 
 def elemental2_output_artifact(artifact_key, type = :jar, classifier = nil)
@@ -16,16 +22,45 @@ def elemental2_output_artifact(artifact_key, type = :jar, classifier = nil)
 end
 
 task 'elemental2:download' do
-  git_clone('jsinterop', 'elemental2', 'https://github.com/realityforge/elemental2.git', :branch => ELEMENTAL2_BRANCH)
+  git_clone('jsinterop', 'elemental2', 'https://github.com/realityforge/elemental2.git')
+  if ELEMENTAL2_UPDATE_UPSTREAM
+    in_dir(product_path('jsinterop', 'elemental2')) do
+      `git remote rm upstream`
+      sh "git remote add upstream  https://github.com/google/elemental2.git"
+      sh "git fetch upstream --prune"
+      sh "git checkout upstream"
+      sh "git reset --hard upstream/master"
+      sh "git push -f"
+    end
+  end
+  # Remove all non master local branches
+  in_dir(product_path('jsinterop', 'elemental2')) do
+    sh "git checkout master"
+    sh "git reset --hard origin/master"
+    `git branch`.split("\n").reject{|line| line =~ / master$/ }.each do |line|
+      sh "git branch -D #{line}"
+    end
+  end
+
+  # Checkout base branch/commit/etc
   commit_hash = nil
   in_dir(product_path('jsinterop', 'elemental2')) do
-    sh "git fetch --prune"
-    sh "git reset --hard origin/#{ELEMENTAL2_BRANCH}"
+    sh "git checkout #{ELEMENTAL2_BRANCH}"
     commit_hash = `git describe --tags --always`.strip
   end
+
   record_branch('elemental2', ELEMENTAL2_BRANCH)
   if record_commit_hash('elemental2', commit_hash)
     load_and_increment_build_number('elemental2')
+  end
+
+  in_dir(product_path('jsinterop', 'elemental2')) do
+    `git branch -D #{elemental2_integration_branch} 2>&1`
+    `git push origin :#{elemental2_integration_branch} 2>&1`
+    sh "git checkout -b#{elemental2_integration_branch}"
+    ELEMENTAL2_BRANCHES_TO_MERGE.each do |branch|
+      sh "git merge --no-edit origin/#{branch}"
+    end
   end
 end
 

@@ -37,7 +37,11 @@ def git_clone(category, name, repository_url, options = {})
     in_dir(local_dir) do
       sh 'git clean -f -d -x'
       sh 'git fetch --prune'
-      sh "git checkout #{branch}"
+      if `git branch | grep ' master'`.size > 0
+        sh "git checkout #{branch}"
+      else
+        sh "git checkout --track origin/#{branch}"
+      end
       sh "git reset --hard origin/#{branch}"
     end
   else
