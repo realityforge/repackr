@@ -66,13 +66,14 @@ end
 
 task 'elemental2:patch' do
   in_dir(product_path('jsinterop', 'elemental2')) do
-    sh "git reset --hard origin/#{ELEMENTAL2_BRANCH}"
     new_content =
       IO.read('release_elemental.sh').
         gsub(/^read -s gpg_passphrase/, '#set gpg_passphrase=""').
         gsub(/^group_id="com\.google\.elemental2"/, "group_id=\"#{ELEMENTAL2_GROUP_ID}\"").
         gsub(/^\${gpg_passphrase}"/, '${gpg_passphrase}')
     IO.write('release_elemental.sh', new_content)
+    sh "git add release_elemental.sh"
+    sh "git commit -m \"Patch script to enable automated release\""
   end
 end
 
