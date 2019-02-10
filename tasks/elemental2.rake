@@ -73,9 +73,6 @@ task 'elemental2:patch' do
         gsub(/^group_id="com\.google\.elemental2"/, "group_id=\"#{ELEMENTAL2_GROUP_ID}\"").
         gsub(/^\${gpg_passphrase}"/, '${gpg_passphrase}')
     IO.write('release_elemental.sh', new_content)
-    IO.write('.bazelrc', <<-RC)
-build --incompatible_package_name_is_a_function=false
-    RC
   end
 end
 
