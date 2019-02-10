@@ -181,6 +181,11 @@ task 'elemental2:save_build' do
   sh "git tag elemental2-#{elemental2_version}"
   sh "git push origin elemental2-#{elemental2_version}"
   sh 'git push'
+
+  # Save integration branch
+  in_dir(product_path('jsinterop', 'elemental2')) do
+    sh "git push origin #{elemental2_integration_branch}"
+  end
 end
 
 task 'elemental2:generate_email' do
