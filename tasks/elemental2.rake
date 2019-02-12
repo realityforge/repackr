@@ -26,17 +26,17 @@ task 'elemental2:download' do
   if ELEMENTAL2_UPDATE_UPSTREAM
     in_dir(product_path('jsinterop', 'elemental2')) do
       `git remote rm upstream`
-      sh "git remote add upstream  https://github.com/google/elemental2.git"
-      sh "git fetch upstream --prune"
-      sh "git checkout upstream"
-      sh "git reset --hard upstream/master"
-      sh "git push -f"
+      sh 'git remote add upstream  https://github.com/google/elemental2.git'
+      sh 'git fetch upstream --prune'
+      sh 'git checkout upstream'
+      sh 'git reset --hard upstream/master'
+      sh 'git push -f'
     end
   end
   # Remove all non master local branches
   in_dir(product_path('jsinterop', 'elemental2')) do
-    sh "git checkout master"
-    sh "git reset --hard origin/master"
+    sh 'git checkout master'
+    sh 'git reset --hard origin/master'
     `git branch`.split("\n").reject{|line| line =~ / master$/ }.each do |line|
       sh "git branch -D #{line}"
     end
@@ -72,7 +72,7 @@ task 'elemental2:patch' do
         gsub(/^group_id="com\.google\.elemental2"/, "group_id=\"#{ELEMENTAL2_GROUP_ID}\"").
         gsub(/^\${gpg_passphrase}"/, '${gpg_passphrase}')
     IO.write('release_elemental.sh', new_content)
-    sh "git add release_elemental.sh"
+    sh 'git add release_elemental.sh'
     sh "git commit -m \"Patch script to enable automated release\""
   end
 end
