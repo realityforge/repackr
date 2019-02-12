@@ -223,7 +223,21 @@ pom.xml via
       <version>#{generator_version}</version>
     </dependency>
 
-Hope it helps someone,
+More importantly there is an executable jar artifact with all the dependencies
+merged into the artifact that can be downloaded and run immediately.
+
+i.e.
+
+  $ wget http://central.maven.org/maven2/org/realityforge/com/google/jsinterop/closure-generator/#{generator_version}/closure-generator-#{generator_version}-all.jar
+  $ java -jar closure-generator-#{generator_version}-all.jar \\
+  >    --extension_type_prefix React \\
+  >    --output react.jar \\
+  >    --package_prefix react \\
+  >    --global_scope_class_name ReactGlobal \\
+  >    --output_dependency_file react.jdeps \\
+  >    react.js
+
+Hope this helps,
 
 Peter Donald
   EMAIL
