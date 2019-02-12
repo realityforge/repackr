@@ -64,19 +64,6 @@ task 'elemental2:download' do
   end
 end
 
-task 'elemental2:patch' do
-  in_dir(product_path('jsinterop', 'elemental2')) do
-    new_content =
-      IO.read('release_elemental.sh').
-        gsub(/^read -s gpg_passphrase/, '#set gpg_passphrase=""').
-        gsub(/^group_id="com\.google\.elemental2"/, "group_id=\"#{ELEMENTAL2_GROUP_ID}\"").
-        gsub(/^\${gpg_passphrase}"/, '${gpg_passphrase}')
-    IO.write('release_elemental.sh', new_content)
-    sh 'git add release_elemental.sh'
-    sh "git commit -m \"Patch script to enable automated release\""
-  end
-end
-
 task 'elemental2:build' do
   output_dir = dist_dir('elemental2')
   rm_rf output_dir
@@ -253,7 +240,7 @@ Peter Donald
 end
 
 desc 'Download the latest elemental2 project and push a local release'
-task 'elemental2:local_release' => %w(elemental2:download elemental2:patch elemental2:build elemental2:install)
+task 'elemental2:local_release' => %w(elemental2:download elemental2:build elemental2:install)
 
 desc 'Download the latest elemental2 project and push a release to Maven Central'
-task 'elemental2:release' => %w(elemental2:download elemental2:patch elemental2:build elemental2:publish elemental2:save_build elemental2:generate_email)
+task 'elemental2:release' => %w(elemental2:download elemental2:build elemental2:publish elemental2:save_build elemental2:generate_email)

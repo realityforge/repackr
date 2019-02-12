@@ -7,5 +7,10 @@
     "commit": "7a28038",
     "buildNumber": 15,
     "branch": "integration"
+  },
+  "jsinterop-generator": {
+    "branch": "upstream",
+    "commit": "013d8fa",
+    "buildNumber": 1
   }
 }
