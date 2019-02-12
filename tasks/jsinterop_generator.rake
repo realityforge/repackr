@@ -176,7 +176,7 @@ end
 task 'generator:save_build' do
   sh 'git reset'
   sh 'git add versions.json'
-  sh "git commit -m \"Release the #{generator_version} version of the jsinterop-generator project\""
+  sh "git commit --allow-empty -m \"Release the #{generator_version} version of the jsinterop-generator project\""
   sh "git tag jsinterop-generator-#{generator_version}"
   sh "git push origin jsinterop-generator-#{generator_version}"
   sh 'git push'
