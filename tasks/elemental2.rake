@@ -177,6 +177,9 @@ task 'elemental2:save_build' do
 end
 
 task 'elemental2:generate_email' do
+
+  # TODO: Generate an API diff as part of the release and commit it locally and report it in email
+
   email = <<-EMAIL
 To: google-web-toolkit@googlegroups.com
 Subject: [ANNOUNCE] (Unofficial) Elemental2 #{elemental2_version} packages published to Maven Central
