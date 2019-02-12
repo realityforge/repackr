@@ -99,6 +99,8 @@ task 'generator:build' do
       end
     end
 
+    sh 'bazel build //java/jsinterop/generator/closure:ClosureJsinteropGenerator_deploy.jar'
+
     sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
 
     javadocs_artifact = generator_output_artifact(:jar, :javadoc)
@@ -113,6 +115,10 @@ task 'generator:build' do
     mkdir_p File.dirname(jar_artifact)
     sh "jar -cf #{jar_artifact} -C #{classes_dir}/ ."
 
+    all_artifact = generator_output_artifact(:jar, :all)
+    mkdir_p File.dirname(all_artifact)
+    cp 'bazel-bin/java/jsinterop/generator/closure/ClosureJsinteropGenerator_deploy.jar', all_artifact.to_s
+
     pom =
       IO.read('maven/pom-closure-generator.xml').
         gsub('__GROUP_ID__', GENERATOR_GROUP_ID).
@@ -124,6 +130,7 @@ task 'generator:build' do
 
     sign_task(pom_artifact)
     sign_task(jar_artifact)
+    sign_task(all_artifact)
     sign_task(javadocs_artifact)
     sign_task(source_artifact)
   end
