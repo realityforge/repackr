@@ -176,8 +176,8 @@ RepackrMavenCentralReleaseTool.define_publish_tasks('elemental2',
 end
 
 task 'elemental2:save_build' do
-  sh "git reset"
-  sh "git add versions.json"
+  sh 'git reset'
+  sh 'git add versions.json'
   sh "git commit -m \"Release the #{elemental2_version} version of the elemental2 project\""
   sh "git tag elemental2-#{elemental2_version}"
   sh "git push origin elemental2-#{elemental2_version}"
