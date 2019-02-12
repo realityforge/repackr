@@ -120,7 +120,6 @@ task 'elemental2:build' do
 end
 
 def artifact_def(artifact_key, type, classifier = nil)
-  puts "artifact_def(#{artifact_key}, #{type}, #{classifier}) => #{elemental2_output_artifact(artifact_key, type, classifier)}"
   Buildr.artifact({ :group => ELEMENTAL2_GROUP_ID,
                     :id => "elemental2-#{artifact_key}",
                     :version => elemental2_version,
