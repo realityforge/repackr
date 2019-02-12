@@ -229,7 +229,7 @@ where artifact-id is one of
 To see how these artifacts are published see:
 https://github.com/realityforge/repackr
 
-Hope it helps someone,
+Hope this helps,
 
 Peter Donald
   EMAIL
