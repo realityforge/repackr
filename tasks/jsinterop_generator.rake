@@ -136,26 +136,28 @@ task 'generator:build' do
   end
 end
 
-def artifact_def(type, classifier = nil)
+def generator_artifact_def(type, classifier = nil)
   Buildr.artifact({ :group => GENERATOR_GROUP_ID, :id => 'closure-generator', :version => generator_version, :type => type, :classifier => classifier }).
     from(generator_output_artifact(type, classifier))
 end
 
-def tasks_for_modules
+def generator_tasks_for_modules
   tasks = []
-  tasks << artifact_def(:pom)
-  tasks << artifact_def('pom.asc')
-  tasks << artifact_def(:jar)
-  tasks << artifact_def('jar.asc')
-  tasks << artifact_def(:jar, :sources)
-  tasks << artifact_def('jar.asc', :sources)
-  tasks << artifact_def(:jar, :javadoc)
-  tasks << artifact_def('jar.asc', :javadoc)
+  tasks << generator_artifact_def(:pom)
+  tasks << generator_artifact_def('pom.asc')
+  tasks << generator_artifact_def(:jar)
+  tasks << generator_artifact_def('jar.asc')
+  tasks << generator_artifact_def(:jar, :all)
+  tasks << generator_artifact_def('jar.asc', :all)
+  tasks << generator_artifact_def(:jar, :sources)
+  tasks << generator_artifact_def('jar.asc', :sources)
+  tasks << generator_artifact_def(:jar, :javadoc)
+  tasks << generator_artifact_def('jar.asc', :javadoc)
   tasks
 end
 
 task 'generator:install' do
-  tasks_for_modules.each do |task|
+  generator_tasks_for_modules.each do |task|
     in_local_repository = Buildr.repositories.locate(task)
     rm_f in_local_repository
     mkdir_p File.dirname(in_local_repository)
@@ -168,7 +170,7 @@ RepackrMavenCentralReleaseTool.define_publish_tasks('generator',
                                                     :profile_name => 'org.realityforge',
                                                     :username => 'realityforge') do
   task('generator:install').invoke
-  tasks_for_modules.select {|t| t.type != :pom}.each(&:upload)
+  generator_tasks_for_modules.select {|t| t.type != :pom}.each(&:upload)
 end
 
 task 'generator:save_build' do
