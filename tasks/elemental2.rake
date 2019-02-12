@@ -87,7 +87,7 @@ task 'elemental2:build' do
 
       javadocs_artifact = elemental2_output_artifact(artifact_key, :jar, :javadoc)
       mkdir_p File.dirname(javadocs_artifact)
-      sh "jar -cf #{javadocs_artifact} -C #{src_dir}/ ."
+      sh "jar -cf #{javadocs_artifact} -C #{javadoc_dir}/ ."
 
       rm_rf "#{WORKSPACE_DIR}/target"
 
