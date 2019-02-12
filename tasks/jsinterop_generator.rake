@@ -70,7 +70,7 @@ task 'generator:build' do
   product_path = product_path('jsinterop', 'jsinterop-generator')
   in_dir(product_path) do
     unless ENV['BAZEL'] == 'no'
-      #TODO: sh 'bazel clean --expunge'
+      sh 'bazel clean --expunge'
       sh 'bazel build //...'
     end
     version = generator_version
