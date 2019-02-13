@@ -226,8 +226,6 @@ where artifact-id is one of
 * elemental2-media
 * elemental2-webstorage
 
-To see how these artifacts are published see:
-https://github.com/realityforge/repackr
 
 Hope this helps,
 
