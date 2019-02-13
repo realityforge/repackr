@@ -37,7 +37,7 @@ task 'elemental2:download' do
   in_dir(product_path('jsinterop', 'elemental2')) do
     sh 'git checkout master'
     sh 'git reset --hard origin/master'
-    `git branch`.split("\n").reject{|line| line =~ / master$/ }.each do |line|
+    `git branch`.split("\n").reject {|line| line =~ / master$/}.each do |line|
       sh "git branch -D #{line}"
     end
   end
