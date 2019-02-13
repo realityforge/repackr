@@ -231,6 +231,7 @@ Hope this helps,
 
 Peter Donald
   EMAIL
+
   mkdir_p 'emails'
   File.open 'emails/elemental2-email.txt', 'w' do |file|
     file.write email
