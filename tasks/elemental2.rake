@@ -5,6 +5,8 @@ ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage)
 ELEMENTAL2_BRANCH = 'upstream'
 ELEMENTAL2_BRANCHES_TO_MERGE = %w(WebAssembly)
 ELEMENTAL2_UPDATE_UPSTREAM = true
+# TODO: This should be automated somehow
+ELEMENTAL2_PREV_VERSION='1.0.0-b15-7a28038'
 
 def elemental2_version
   "1.0.0-#{get_version_suffix('elemental2')}"
@@ -226,7 +228,32 @@ where artifact-id is one of
 * elemental2-media
 * elemental2-webstorage
 
+  EMAIL
 
+  require 'json'
+
+  added_header = false
+
+  ELEMENTAL2_MODULES.each do |m|
+    puts "Retrieving changes for #{m}"
+    changes = Net::HTTP.get(URI.parse("https://diff.revapi.org/check?old=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{ELEMENTAL2_PREV_VERSION}&new=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{elemental2_version}"))
+    json = JSON.parse(changes)
+    if json.size > 0
+      unless added_header
+        added_header = true
+        email += <<-EMAIL
+API Changes relative to version #{ELEMENTAL2_PREV_VERSION}
+
+        EMAIL
+      end
+        email += <<-EMAIL
+elemental2-#{m}: #{json.size} changes. See https://diff.revapi.org/?groupId=org.realityforge.com.google.elemental2&artifactId=elemental2-#{m}&old=#{ELEMENTAL2_PREV_VERSION}&new=#{elemental2_version} 
+
+        EMAIL
+    end
+  end
+  #
+  email += <<-EMAIL
 Hope this helps,
 
 Peter Donald
