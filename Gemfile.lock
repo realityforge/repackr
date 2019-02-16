@@ -10,7 +10,7 @@ GEM
       json
       main (>= 4.7.3)
     builder (3.2.2)
-    buildr (1.5.6)
+    buildr (1.5.7)
       atoulme-Antwrap (= 0.7.5)
       builder (= 3.2.2)
       bundler
@@ -62,7 +62,7 @@ PLATFORMS
 
 DEPENDENCIES
   braid (= 1.1.2)
-  buildr (= 1.5.6)
+  buildr (= 1.5.7)
   mcrt (= 1.13.0)
   netrc (~> 0.11)
   octokit (~> 4.0)
