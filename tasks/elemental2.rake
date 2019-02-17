@@ -236,8 +236,28 @@ where artifact-id is one of
 
   ELEMENTAL2_MODULES.each do |m|
     puts "Retrieving changes for #{m}"
-    changes = Net::HTTP.get(URI.parse("https://diff.revapi.org/check?old=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{ELEMENTAL2_PREV_VERSION}&new=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{elemental2_version}"))
-    json = JSON.parse(changes)
+
+    revapi_diff = Buildr.artifact(:revapi_diff)
+
+    old_api = Buildr.artifact("org.realityforge.com.google.elemental2:elemental2-#{m}:jar:#{ELEMENTAL2_PREV_VERSION}")
+    new_api = Buildr.artifact("org.realityforge.com.google.elemental2:elemental2-#{m}:jar:#{elemental2_version}")
+
+    revapi_diff.invoke
+    old_api.invoke
+    new_api.invoke
+
+    require 'tempfile'
+
+    file = Tempfile.new('foo')
+    output_file = file.path
+    file.close
+    file.unlink
+
+    sh ['java', '-jar', revapi_diff.to_s, '--old-api', old_api.to_s, '--new-api', new_api.to_s, '--output-file', output_file].join(' ')
+
+    #changes = Net::HTTP.get(URI.parse("https://diff.revapi.org/check?old=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{ELEMENTAL2_PREV_VERSION}&new=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{elemental2_version}"))
+    puts IO.read(output_file)
+    json = JSON.parse(IO.read(output_file))
     if json.size > 0
       unless added_header
         added_header = true

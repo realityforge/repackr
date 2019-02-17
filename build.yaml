@@ -1,0 +1,10 @@
+repositories:
+  remote:
+   - http://repo1.maven.org/maven2
+   - https://stocksoftware.jfrog.io/stocksoftware/public
+   - https://stocksoftware.jfrog.io/stocksoftware/oss
+   - https://stocksoftware.jfrog.io/stocksoftware/thirdparty-local
+   - https://stocksoftware.jfrog.io/stocksoftware/staging
+
+artifacts:
+  revapi_diff: org.realityforge.revapi.diff:revapi-diff:jar:all:0.04
