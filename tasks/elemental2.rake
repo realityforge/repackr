@@ -255,8 +255,6 @@ where artifact-id is one of
 
     sh ['java', '-jar', revapi_diff.to_s, '--old-api', old_api.to_s, '--new-api', new_api.to_s, '--output-file', output_file].join(' ')
 
-    #changes = Net::HTTP.get(URI.parse("https://diff.revapi.org/check?old=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{ELEMENTAL2_PREV_VERSION}&new=org.realityforge.com.google.elemental2%3Aelemental2-#{m}%3A#{elemental2_version}"))
-    puts IO.read(output_file)
     json = JSON.parse(IO.read(output_file))
     if json.size > 0
       unless added_header
