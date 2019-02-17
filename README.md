@@ -20,8 +20,8 @@ as `-BETA1`, `-stable`, `-RC1`, removed
 
 i.e. if the original Maven coordinates for an artifact are:
 
-    com.google.elemental2:elemental2-webstorage:jar:1.0.0-RC1
+    com.biz.mylib:mylib-core:jar:1.0.0-RC1
 
 Then a coordinate for a release could be
 
-    org.realityforge.com.google.elemental2:elemental2-webstorage:jar:1.0.0-b16-6897368
+    org.realityforge.com.biz.mylib:elmylib-core:jar:1.0.0-b16-6897368
