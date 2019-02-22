@@ -242,7 +242,7 @@ feature present in newer externs or when I am explicitly asked.
       unless added_header
         added_header = true
         email += <<-EMAIL
-API Changes relative to version #{ELEMENTAL2_PREV_VERSION}
+API Changes relative to Elemental2 version #{ELEMENTAL2_PREV_VERSION}
 
         EMAIL
       end
