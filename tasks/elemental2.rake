@@ -183,7 +183,7 @@ task 'elemental2:generate_email' do
 
   email = <<-EMAIL
 To: google-web-toolkit@googlegroups.com
-Subject: [ANNOUNCE] (Unofficial) Elemental2 #{elemental2_version} packages published to Maven Central
+Subject: [ANN] (Unofficial) Elemental2 #{elemental2_version} release
 
 Elemental2 provides type checked access to browser APIs for Java
 code. This is done by using closure extern files and generating
