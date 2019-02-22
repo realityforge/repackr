@@ -209,25 +209,6 @@ This is completely unofficial so please don't bug the original
 Elemental2 authors. A new version will be released when I need a
 feature present in newer externs or when I am explicitly asked.
 
-The Maven dependencies can be added to your pom.xml via
-
-    <dependency>
-      <groupId>org.realityforge.com.google.elemental2</groupId>
-      <artifactId>${artifact-id}</artifactId>
-      <version>#{elemental2_version}</version>
-    </dependency>
-
-where artifact-id is one of
-
-* elemental2-core
-* elemental2-dom
-* elemental2-promise
-* elemental2-indexeddb
-* elemental2-svg
-* elemental2-webgl
-* elemental2-media
-* elemental2-webstorage
-* elemental2-webassembly
 
   EMAIL
 
@@ -273,6 +254,26 @@ elemental2-#{m}: #{json.size} changes. See https://diff.revapi.org/?groupId=org.
   end
   #
   email += <<-EMAIL
+The Maven dependencies can be added to your pom.xml via
+
+    <dependency>
+      <groupId>org.realityforge.com.google.elemental2</groupId>
+      <artifactId>${artifact-id}</artifactId>
+      <version>#{elemental2_version}</version>
+    </dependency>
+
+where artifact-id is one of
+
+* elemental2-core
+* elemental2-dom
+* elemental2-promise
+* elemental2-indexeddb
+* elemental2-svg
+* elemental2-webgl
+* elemental2-media
+* elemental2-webstorage
+* elemental2-webassembly
+
 Hope this helps,
 
 Peter Donald
