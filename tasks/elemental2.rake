@@ -190,25 +190,11 @@ code. This is done by using closure extern files and generating
 JsTypes, which are part of the new JsInterop specification that
 is both implemented in GWT and J2CL.
 
-The official Elemental2 project is located at
-
 https://github.com/google/elemental2
 
-The Elemental2 project does not yet provide regular releases but
-is evolving as the underlying Closure compiler externs evolve and
-this can make it difficult to adopt Elemental2 in more traditional
-build systems.
-
-Until regular Elemental2 releases start occurring, I have decided
-to periodically publish versions of Elemental2 artifacts to maven
-central. To avoid conflicts with the official releases the groupId
-of the artifacts are prefixed with "org.realityforge." and artifacts
-use different versions.
-
-This is completely unofficial so please don't bug the original
-Elemental2 authors. A new version will be released when I need a
-feature present in newer externs or when I am explicitly asked.
-
+This is an unofficial release to Maven Central under a different groupId
+and is completely unofficial so please don't bug the original authors. A
+new version is released on demand.
 
   EMAIL
 
