@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/util')
 
 ELEMENTAL2_GROUP_ID = 'org.realityforge.com.google.elemental2'
-ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage)
+ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage webassembly)
 ELEMENTAL2_BRANCH = 'upstream'
-ELEMENTAL2_BRANCHES_TO_MERGE = %w(WebAssembly VertispanChanges)
+ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges)
 ELEMENTAL2_UPDATE_UPSTREAM = true
 # TODO: This should be automated somehow
 ELEMENTAL2_PREV_VERSION='1.0.0-b17-6897368'
@@ -227,6 +227,7 @@ where artifact-id is one of
 * elemental2-webgl
 * elemental2-media
 * elemental2-webstorage
+* elemental2-webassembly
 
   EMAIL
 
