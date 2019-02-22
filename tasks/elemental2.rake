@@ -179,7 +179,7 @@ end
 
 task 'elemental2:generate_email' do
 
-  # TODO: Generate an API diff as part of the release and commit it locally and report it in email
+  # TODO: Generate an API diff as part of the release and publish it somewhere rather than linking to online service
 
   email = <<-EMAIL
 To: google-web-toolkit@googlegroups.com
