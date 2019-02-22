@@ -190,7 +190,7 @@ code. This is done by using closure extern files and generating
 JsTypes, which are part of the new JsInterop specification that
 is both implemented in GWT and J2CL.
 
-The official Elemental2 project is available via
+The official Elemental2 project is located at
 
 https://github.com/google/elemental2
 
@@ -209,7 +209,7 @@ This is completely unofficial so please don't bug the original
 Elemental2 authors. A new version will be released when I need a
 feature present in newer externs or when I am explicitly asked.
 
-The Maven dependencies published can be added to your pom.xml via
+The Maven dependencies can be added to your pom.xml via
 
     <dependency>
       <groupId>org.realityforge.com.google.elemental2</groupId>
