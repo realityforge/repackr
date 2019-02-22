@@ -228,16 +228,15 @@ feature present in newer externs or when I am explicitly asked.
     old_api.invoke
     new_api.invoke
 
-    require 'tempfile'
-
-    file = Tempfile.new('foo')
-    output_file = file.path
-    file.close
-    file.unlink
+    mkdir_p 'emails'
+    output_file = "emails/elemental2-#{m}-#{ELEMENTAL2_PREV_VERSION}-to-#{elemental2_version}-diff.json"
 
     sh ['java', '-jar', revapi_diff.to_s, '--old-api', old_api.to_s, '--new-api', new_api.to_s, '--output-file', output_file].join(' ')
 
     json = JSON.parse(IO.read(output_file))
+    non_breaking_changes = json.select{|j|j['classification']['SOURCE'] == 'NON_BREAKING'}.size
+    potentially_breaking_changes = json.select{|j|j['classification']['SOURCE'] == 'POTENTIALLY_BREAKING'}.size
+    breaking_changes = json.select{|j|j['classification']['SOURCE'] == 'BREAKING'}.size
     if json.size > 0
       unless added_header
         added_header = true
@@ -246,10 +245,20 @@ API Changes relative to Elemental2 version #{ELEMENTAL2_PREV_VERSION}
 
         EMAIL
       end
-        email += <<-EMAIL
-elemental2-#{m}: #{json.size} changes. See https://diff.revapi.org/?groupId=org.realityforge.com.google.elemental2&artifactId=elemental2-#{m}&old=#{ELEMENTAL2_PREV_VERSION}&new=#{elemental2_version} 
-
-        EMAIL
+      email += <<-EMAIL
+elemental2-#{m}: Full details at https://diff.revapi.org/?groupId=org.realityforge.com.google.elemental2&artifactId=elemental2-#{m}&old=#{ELEMENTAL2_PREV_VERSION}&new=#{elemental2_version}
+      EMAIL
+      email += <<-EMAIL if non_breaking_changes > 0
+  #{non_breaking_changes} non breaking changes.
+      EMAIL
+      email += <<-EMAIL if potentially_breaking_changes > 0
+  #{potentially_breaking_changes} potentially breaking changes.
+      EMAIL
+      email += <<-EMAIL if breaking_changes > 0
+  #{breaking_changes} breaking changes.
+      EMAIL
+    else
+      rm_f output_file
     end
   end
   #
@@ -279,7 +288,6 @@ Hope this helps,
 Peter Donald
   EMAIL
 
-  mkdir_p 'emails'
   File.open 'emails/elemental2-email.txt', 'w' do |file|
     file.write email
   end
