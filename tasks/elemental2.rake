@@ -6,7 +6,7 @@ ELEMENTAL2_BRANCH = 'upstream'
 ELEMENTAL2_BRANCHES_TO_MERGE = %w(WebAssembly VertispanChanges)
 ELEMENTAL2_UPDATE_UPSTREAM = true
 # TODO: This should be automated somehow
-ELEMENTAL2_PREV_VERSION='1.0.0-b16-6897368'
+ELEMENTAL2_PREV_VERSION='1.0.0-b17-6897368'
 
 def elemental2_version
   "1.0.0-#{get_version_suffix('elemental2')}"
