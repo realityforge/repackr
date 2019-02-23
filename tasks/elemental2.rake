@@ -192,8 +192,8 @@ is both implemented in GWT and J2CL.
 
 https://github.com/google/elemental2
 
-This is an unofficial release to Maven Central under a different groupId
-and please don't bug the original authors. Versions are released on demand.
+This is an unofficial release to Maven Central under a different groupId.
+Please don't bug the original authors. Versions are released on demand.
 
   EMAIL
 
