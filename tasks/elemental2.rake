@@ -246,7 +246,7 @@ elemental2-#{m}: Full details at https://diff.revapi.org/?groupId=org.realityfor
       rm_f output_file
     end
   end
-  #
+
   email += <<-EMAIL
 The Maven dependencies can be added to your pom.xml via
 
