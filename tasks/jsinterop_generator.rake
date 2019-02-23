@@ -214,8 +214,7 @@ This is completely unofficial so please don't bug the original
 JsInterop-Generator authors. A new version will be released when I need
 it or when I am explicitly asked.
 
-The Maven dependency published to Maven Central can be added to your
-pom.xml via
+The Maven dependency can be added to your pom.xml via
 
     <dependency>
       <groupId>org.realityforge.org.realityforge.com.google.jsinterop</groupId>
