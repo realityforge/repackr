@@ -200,19 +200,8 @@ The official JsInterop-Generator project is available via
 
 https://github.com/google/jsinterop-generator
 
-The JsInterop-Generator project does not yet provide regular releases
-as it is primarily used to build Elemental2. This makes it difficult
-to adopt the JsInterop-Generator in more traditional build systems.
-
-Until regular JsInterop-Generator releases start occurring, I have
-decided to periodically publish versions of the JsInterop-Generator
-artifact to maven central. To avoid conflicts with the official releases
-the groupId of the artifacts are prefixed with "org.realityforge." and
-the artifacts use different versions.
-
-This is completely unofficial so please don't bug the original
-JsInterop-Generator authors. A new version will be released when I need
-it or when I am explicitly asked.
+This is an unofficial release to Maven Central under a different groupId.
+Please don't bug the original authors. Versions are released on demand.
 
 The Maven dependency can be added to your pom.xml via
 
