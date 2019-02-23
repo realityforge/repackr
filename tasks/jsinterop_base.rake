@@ -4,6 +4,8 @@ BASE_GROUP_ID = 'org.realityforge.com.google.jsinterop'
 BASE_BRANCH = 'upstream'
 BASE_BRANCHES_TO_MERGE = %w(TravisCiIntegration AddGitIgnore FixPOM)
 BASE_UPDATE_UPSTREAM = true
+# TODO: This should be automated somehow
+BASE_PREV_VERSION = '1.0.0-RC1'
 
 def base_version
   "1.0.0-#{get_version_suffix('jsinterop-base')}"
@@ -175,7 +177,49 @@ https://github.com/google/jsinterop-base
 
 This is an unofficial release to Maven Central under a different groupId.
 Please don't bug the original authors. Versions are released on demand.
+  EMAIL
+  puts 'Retrieving changes for jsinterop-base'
 
+  revapi_diff = Buildr.artifact(:revapi_diff)
+
+  old_api = Buildr.artifact("com.google.jsinterop:base:jar:#{BASE_PREV_VERSION}")
+  new_api = Buildr.artifact("#{BASE_GROUP_ID}:base:jar:#{base_version}")
+
+  revapi_diff.invoke
+  old_api.invoke
+  new_api.invoke
+
+  mkdir_p 'emails'
+  output_file = "emails/jsinterop-base-#{BASE_PREV_VERSION}-to-#{elemental2_version}-diff.json"
+
+  sh ['java', '-jar', revapi_diff.to_s, '--old-api', old_api.to_s, '--new-api', new_api.to_s, '--output-file', output_file].join(' ')
+
+  json = JSON.parse(IO.read(output_file))
+  non_breaking_changes = json.select {|j| j['classification']['SOURCE'] == 'NON_BREAKING'}.size
+  potentially_breaking_changes = json.select {|j| j['classification']['SOURCE'] == 'POTENTIALLY_BREAKING'}.size
+  breaking_changes = json.select {|j| j['classification']['SOURCE'] == 'BREAKING'}.size
+  if json.size > 0
+
+    email += <<-EMAIL
+API Changes relative to version #{BASE_PREV_VERSION}
+
+    EMAIL
+    email += <<-EMAIL
+Full details at https://diff.revapi.org/?groupId=org.realityforge.com.google.elemental2&artifactId=base&old=#{BASE_PREV_VERSION}&new=#{base_version}
+    EMAIL
+    email += <<-EMAIL if non_breaking_changes > 0
+  #{non_breaking_changes} non breaking changes.
+    EMAIL
+    email += <<-EMAIL if potentially_breaking_changes > 0
+  #{potentially_breaking_changes} potentially breaking changes.
+    EMAIL
+    email += <<-EMAIL if breaking_changes > 0
+  #{breaking_changes} breaking changes.
+    EMAIL
+  else
+    rm_f output_file
+  end
+  email += <<-EMAIL
 The Maven dependency can be added to your pom.xml via
 
     <dependency>
