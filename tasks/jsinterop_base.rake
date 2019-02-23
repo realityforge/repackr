@@ -177,6 +177,7 @@ https://github.com/google/jsinterop-base
 
 This is an unofficial release to Maven Central under a different groupId.
 Please don't bug the original authors. Versions are released on demand.
+
   EMAIL
   puts 'Retrieving changes for jsinterop-base'
 
