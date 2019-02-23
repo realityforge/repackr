@@ -82,6 +82,7 @@ task 'base:build' do
     src_dir = "#{unpack_dir}/src"
     mkdir_p src_dir
     in_dir(src_dir) do
+      sh "jar -xf #{product_path}/bazel-bin/java/jsinterop/base/libbase.jar"
       sh "jar -xf #{product_path}/bazel-bin/java/jsinterop/base/libbase-src.jar"
     end
 
@@ -97,7 +98,8 @@ task 'base:build' do
     cp_r 'bazel-bin/java/jsinterop/base/libbase-src.jar', source_artifact
 
     jar_artifact = base_output_artifact(:jar)
-    cp_r 'bazel-bin/java/jsinterop/base/libbase.jar', jar_artifact
+    mkdir_p File.dirname(jar_artifact)
+    sh "jar -cf #{jar_artifact} -C #{src_dir}/ ."
 
     pom =
       IO.read('maven/pom-base.xml').
