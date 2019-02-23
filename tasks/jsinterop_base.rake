@@ -114,7 +114,7 @@ task 'base:build' do
 end
 
 def base_artifact_def(type, classifier = nil)
-  Buildr.artifact({ :group => BASE_GROUP_ID, :id => 'closure-base', :version => base_version, :type => type, :classifier => classifier }).
+  Buildr.artifact({ :group => BASE_GROUP_ID, :id => 'base', :version => base_version, :type => type, :classifier => classifier }).
     from(base_output_artifact(type, classifier))
 end
 
