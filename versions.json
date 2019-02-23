@@ -12,10 +12,5 @@
     "branch": "upstream",
     "commit": "013d8fa",
     "buildNumber": 1
-  },
-  "jsinterop-base": {
-    "branch": "upstream",
-    "commit": "e6d791f",
-    "buildNumber": 1
   }
 }
