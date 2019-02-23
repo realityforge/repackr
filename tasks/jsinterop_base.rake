@@ -177,7 +177,6 @@ https://github.com/google/jsinterop-base
 
 This is an unofficial release to Maven Central under a different groupId.
 Please don't bug the original authors. Versions are released on demand.
-
   EMAIL
   puts 'Retrieving changes for jsinterop-base'
 
@@ -202,6 +201,7 @@ Please don't bug the original authors. Versions are released on demand.
   if json.size > 0
 
     email += <<-EMAIL
+
 API Changes relative to version #{BASE_PREV_VERSION}
 
     EMAIL
@@ -221,6 +221,7 @@ Full details at https://diff.revapi.org/?groupId=org.realityforge.com.google.ele
     rm_f output_file
   end
   email += <<-EMAIL
+
 The Maven dependency can be added to your pom.xml via
 
     <dependency>
