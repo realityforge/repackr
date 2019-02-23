@@ -193,8 +193,8 @@ task 'generator:generate_email' do
 To: google-web-toolkit@googlegroups.com
 Subject: [ANN] (Unofficial) JsInterop-Generator #{generator_version} release
 
-The jsinterop generator is a java program that takes closure extern files as input and generates
-Java classes annotated with JsInterop annotations.
+The jsinterop generator is a java program that takes closure extern files as
+input and generates Java classes annotated with JsInterop annotations.
 
 https://github.com/google/jsinterop-generator
 
