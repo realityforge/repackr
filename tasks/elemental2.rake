@@ -108,7 +108,20 @@ task 'elemental2:build' do
         IO.read("maven/pom-#{artifact_key}.xml").
           gsub('__GROUP_ID__', ELEMENTAL2_GROUP_ID).
           gsub('__VERSION__', version).
-          gsub('__ARTIFICAT_ID__', "elemental2-#{artifact_key}")
+          gsub('__ARTIFICAT_ID__', "elemental2-#{artifact_key}").
+            gsub(<<DEP,<<REPLACEMENT)
+    <dependency>
+      <groupId>com.google.jsinterop</groupId>
+      <artifactId>base</artifactId>
+      <version>1.0.0-RC1</version>
+    </dependency>
+DEP
+    <dependency>
+      <groupId>#{BASE_GROUP_ID}</groupId>
+      <artifactId>base</artifactId>
+      <version>#{base_version}</version>
+    </dependency>
+REPLACEMENT
 
       pom_artifact = elemental2_output_artifact(artifact_key, :pom)
       IO.write(pom_artifact, pom)
