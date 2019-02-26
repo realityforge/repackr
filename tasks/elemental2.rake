@@ -207,7 +207,6 @@ https://github.com/google/elemental2
 
 This is an unofficial release to Maven Central under a different groupId.
 Please don't bug the original authors. Versions are released on demand.
-
   EMAIL
 
   require 'json'
@@ -239,6 +238,7 @@ Please don't bug the original authors. Versions are released on demand.
       unless added_header
         added_header = true
         email += <<-EMAIL
+
 API Changes relative to Elemental2 version #{ELEMENTAL2_PREV_VERSION}
 
         EMAIL
@@ -261,6 +261,7 @@ elemental2-#{m}: Full details at https://diff.revapi.org/?groupId=org.realityfor
   end
 
   email += <<-EMAIL
+
 The Maven dependencies can be added to your pom.xml via
 
     <dependency>
