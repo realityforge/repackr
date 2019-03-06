@@ -4,6 +4,7 @@
 *.md text
 *.rake text
 *.rb text
+*.yaml text
 .gitattributes text
 .gitignore text
 .ruby-version text
