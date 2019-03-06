@@ -15,9 +15,9 @@ def base_integration_branch
   "integration-b#{load_build_number('jsinterop-base')}"
 end
 
-def base_output_artifact(type = :jar, classifier = nil)
+def base_output_artifact(type, suffix, classifier = nil)
   version = base_version
-  artifact_id = 'base'
+  artifact_id = "base#{suffix}"
   filename = "#{artifact_id}-#{version}#{classifier.nil? ? '' : "-#{classifier}"}.#{type}"
   "#{dist_dir('jsinterop-base')}/#{BASE_GROUP_ID.gsub('.', '/')}/#{artifact_id}/#{version}/#{filename}"
 end
@@ -70,68 +70,78 @@ task 'base:build' do
   rm_rf output_dir
   product_path = product_path('jsinterop', 'jsinterop-base')
   in_dir(product_path) do
-    unless ENV['BAZEL'] == 'no'
-      sh 'bazel clean --expunge'
-      sh 'bazel build //java/jsinterop/base:libbase.jar //java/jsinterop/base:libbase-src.jar'
+    ['', '-j2cl'].each do |suffix|
+      unless ENV['BAZEL'] == 'no'
+        sh 'bazel clean --expunge'
+        sh "bazel build //java/jsinterop/base:libbase#{suffix}.jar //java/jsinterop/base:libbase#{suffix}-src.jar"
+      end
+      version = base_version
+
+      unpack_dir = "#{WORKSPACE_DIR}/target/jsinterop-base"
+      rm_rf unpack_dir
+
+      src_dir = "#{unpack_dir}/src"
+      mkdir_p src_dir
+      in_dir(src_dir) do
+        sh "jar -xf #{product_path}/bazel-bin/java/jsinterop/base/libbase#{suffix}.jar"
+        sh "jar -xf #{product_path}/bazel-bin/java/jsinterop/base/libbase#{suffix}-src.jar"
+      end
+
+      javadoc_dir = "#{unpack_dir}/doc"
+      mkdir_p javadoc_dir
+      sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
+
+      javadocs_artifact = base_output_artifact(:jar, suffix, :javadoc)
+      mkdir_p File.dirname(javadocs_artifact)
+      sh "jar -cf #{javadocs_artifact} -C #{javadoc_dir}/ ."
+
+      source_artifact = base_output_artifact(:jar, suffix,:sources)
+      cp_r "bazel-bin/java/jsinterop/base/libbase#{suffix}-src.jar", source_artifact
+
+      jar_artifact = base_output_artifact(:jar, suffix)
+      mkdir_p File.dirname(jar_artifact)
+      sh "jar -cf #{jar_artifact} -C #{src_dir}/ ."
+
+      pom =
+        IO.read('maven/pom-base.xml').
+          gsub('__GROUP_ID__', BASE_GROUP_ID).
+          gsub('__VERSION__', version).
+          gsub('__ARTIFICAT_ID__', "base#{suffix}")
+
+      pom_artifact = base_output_artifact(:pom, suffix)
+      IO.write(pom_artifact, pom)
+
+      sign_task(pom_artifact)
+      sign_task(jar_artifact)
+      sign_task(javadocs_artifact)
+      sign_task(source_artifact)
     end
-    version = base_version
-
-    unpack_dir = "#{WORKSPACE_DIR}/target/jsinterop-base"
-    rm_rf unpack_dir
-
-    src_dir = "#{unpack_dir}/src"
-    mkdir_p src_dir
-    in_dir(src_dir) do
-      sh "jar -xf #{product_path}/bazel-bin/java/jsinterop/base/libbase.jar"
-      sh "jar -xf #{product_path}/bazel-bin/java/jsinterop/base/libbase-src.jar"
-    end
-
-    javadoc_dir = "#{unpack_dir}/doc"
-    mkdir_p javadoc_dir
-    sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
-
-    javadocs_artifact = base_output_artifact(:jar, :javadoc)
-    mkdir_p File.dirname(javadocs_artifact)
-    sh "jar -cf #{javadocs_artifact} -C #{javadoc_dir}/ ."
-
-    source_artifact = base_output_artifact(:jar, :sources)
-    cp_r 'bazel-bin/java/jsinterop/base/libbase-src.jar', source_artifact
-
-    jar_artifact = base_output_artifact(:jar)
-    mkdir_p File.dirname(jar_artifact)
-    sh "jar -cf #{jar_artifact} -C #{src_dir}/ ."
-
-    pom =
-      IO.read('maven/pom-base.xml').
-        gsub('__GROUP_ID__', BASE_GROUP_ID).
-        gsub('__VERSION__', version).
-        gsub('__ARTIFICAT_ID__', 'base')
-
-    pom_artifact = base_output_artifact(:pom)
-    IO.write(pom_artifact, pom)
-
-    sign_task(pom_artifact)
-    sign_task(jar_artifact)
-    sign_task(javadocs_artifact)
-    sign_task(source_artifact)
   end
 end
 
-def base_artifact_def(type, classifier = nil)
-  Buildr.artifact({ :group => BASE_GROUP_ID, :id => 'base', :version => base_version, :type => type, :classifier => classifier }).
-    from(base_output_artifact(type, classifier))
+def base_artifact_def(type, j2cl, classifier = nil)
+  Buildr.artifact({ :group => BASE_GROUP_ID, :id => "base#{j2cl ? '-j2cl' : ''}", :version => base_version, :type => type, :classifier => classifier }).
+    from(base_output_artifact(type, j2cl ? '-j2cl' : '', classifier))
 end
 
 def base_tasks_for_modules
   tasks = []
-  tasks << base_artifact_def(:pom)
-  tasks << base_artifact_def('pom.asc')
-  tasks << base_artifact_def(:jar)
-  tasks << base_artifact_def('jar.asc')
-  tasks << base_artifact_def(:jar, :sources)
-  tasks << base_artifact_def('jar.asc', :sources)
-  tasks << base_artifact_def(:jar, :javadoc)
-  tasks << base_artifact_def('jar.asc', :javadoc)
+  tasks << base_artifact_def(:pom, false)
+  tasks << base_artifact_def('pom.asc', false)
+  tasks << base_artifact_def(:jar, false)
+  tasks << base_artifact_def('jar.asc', false)
+  tasks << base_artifact_def(:jar, false, :sources)
+  tasks << base_artifact_def('jar.asc', false, :sources)
+  tasks << base_artifact_def(:jar, false, :javadoc)
+  tasks << base_artifact_def('jar.asc', false, :javadoc)
+  tasks << base_artifact_def(:pom, true)
+  tasks << base_artifact_def('pom.asc', true)
+  tasks << base_artifact_def(:jar, true)
+  tasks << base_artifact_def('jar.asc', true)
+  tasks << base_artifact_def(:jar, true, :sources)
+  tasks << base_artifact_def('jar.asc', true, :sources)
+  tasks << base_artifact_def(:jar, true, :javadoc)
+  tasks << base_artifact_def('jar.asc', true, :javadoc)
   tasks
 end
 
