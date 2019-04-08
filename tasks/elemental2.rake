@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/util')
 ELEMENTAL2_GROUP_ID = 'org.realityforge.com.google.elemental2'
 ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage webassembly)
 ELEMENTAL2_BRANCH = 'upstream'
-ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges NameEventHandlerParameters SpecifySOmeIntegerTypesForWebSOcket)
+ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges NameEventHandlerParameters UseWhatWGConsoleDefinition)
 ELEMENTAL2_UPDATE_UPSTREAM = true
 # TODO: This should be automated somehow
 ELEMENTAL2_PREV_VERSION='1.0.0-b19-fb227e3'
