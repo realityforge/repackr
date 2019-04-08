@@ -6,7 +6,7 @@ ELEMENTAL2_BRANCH = 'upstream'
 ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges NameEventHandlerParameters UseWhatWGConsoleDefinition)
 ELEMENTAL2_UPDATE_UPSTREAM = true
 # TODO: This should be automated somehow
-ELEMENTAL2_PREV_VERSION='1.0.0-b19-fb227e3'
+ELEMENTAL2_PREV_VERSION='1.0.0-b20-bfe6e22'
 
 def elemental2_version
   "1.0.0-#{get_version_suffix('elemental2')}"
