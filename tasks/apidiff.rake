@@ -7,3 +7,8 @@ task 'apidiff:download' do
     sh 'git pull'
   end
 end
+
+# Generate url for api diff
+def apidiff_url(title, key, old_version, new_version)
+  "https://jsinterop.github.io/api-diff/?key=#{key}&title=#{title}&old=#{old_version}&new=#{new_version}"
+end
