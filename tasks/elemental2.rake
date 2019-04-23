@@ -318,4 +318,4 @@ desc 'Download the latest elemental2 project and push a local release'
 task 'elemental2:local_release' => %w(elemental2:download elemental2:build elemental2:install)
 
 desc 'Download the latest elemental2 project and push a release to Maven Central'
-task 'elemental2:release' => %w(elemental2:download apidiff:download elemental2:build elemental2:publish elemental2:save_build elemental2:generate_email)
+task 'elemental2:release' => %w(elemental2:download apidiff:download elemental2:build elemental2:publish elemental2:save_build elemental2:generate_diff elemental2:generate_email)
