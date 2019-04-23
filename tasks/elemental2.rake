@@ -190,6 +190,30 @@ task 'elemental2:save_build' do
   end
 end
 
+task 'elemental2:generate_diff' do
+  complete_diff = []
+  ELEMENTAL2_MODULES.each do |m|
+    output_file = apidiff_generate("org.realityforge.com.google.elemental2:elemental2-#{m}:jar",
+                                   "elemental2-#{m}",
+                                   ELEMENTAL2_PREV_VERSION,
+                                   elemental2_version)
+
+    complete_diff += JSON.parse(IO.read(output_file))
+  end
+
+  output_file = apidiff_local_file('elemental2', ELEMENTAL2_PREV_VERSION, elemental2_version)
+  mkdir_p File.dirname(output_file)
+  IO.write(output_file, JSON::pretty_generate(complete_diff, :max_nesting => false))
+  in_dir(product_path('jsinterop', 'site')) do
+    sh "git add #{output_file}"
+  end
+
+  in_dir(product_path('jsinterop', 'site')) do
+    sh "git commit -m \"Record Elemental2 API differences between versions #{ELEMENTAL2_PREV_VERSION} and #{elemental2_version}\""
+    sh "git push"
+  end
+end
+
 task 'elemental2:generate_email' do
 
   # TODO: Generate an API diff as part of the release and publish it somewhere rather than linking to online service
@@ -216,25 +240,13 @@ Please don't bug the original authors. Versions are released on demand.
   ELEMENTAL2_MODULES.each do |m|
     puts "Retrieving changes for #{m}"
 
-    revapi_diff = Buildr.artifact(:revapi_diff)
+    output_file = apidiff_local_file("elemental2-#{m}", ELEMENTAL2_PREV_VERSION, elemental2_version)
 
-    old_api = Buildr.artifact("org.realityforge.com.google.elemental2:elemental2-#{m}:jar:#{ELEMENTAL2_PREV_VERSION}")
-    new_api = Buildr.artifact("org.realityforge.com.google.elemental2:elemental2-#{m}:jar:#{elemental2_version}")
-
-    revapi_diff.invoke
-    old_api.invoke
-    new_api.invoke
-
-    mkdir_p 'emails'
-    output_file = "emails/elemental2-#{m}-#{ELEMENTAL2_PREV_VERSION}-to-#{elemental2_version}-diff.json"
-
-    sh ['java', '-jar', revapi_diff.to_s, '--old-api', old_api.to_s, '--new-api', new_api.to_s, '--output-file', output_file].join(' ')
-
-    json = JSON.parse(IO.read(output_file))
-    non_breaking_changes = json.select{|j|j['classification']['SOURCE'] == 'NON_BREAKING'}.size
-    potentially_breaking_changes = json.select{|j|j['classification']['SOURCE'] == 'POTENTIALLY_BREAKING'}.size
-    breaking_changes = json.select{|j|j['classification']['SOURCE'] == 'BREAKING'}.size
-    if json.size > 0
+    changes = JSON.parse(IO.read(output_file))
+    non_breaking_changes = changes.select {|j| j['classification']['SOURCE'] == 'NON_BREAKING'}.size
+    potentially_breaking_changes = changes.select {|j| j['classification']['SOURCE'] == 'POTENTIALLY_BREAKING'}.size
+    breaking_changes = changes.select {|j| j['classification']['SOURCE'] == 'BREAKING'}.size
+    if changes.size > 0
       unless added_header
         added_header = true
         email += <<-EMAIL
