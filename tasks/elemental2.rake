@@ -244,20 +244,30 @@ API Changes relative to Elemental2 version #{ELEMENTAL2_PREV_VERSION}
         EMAIL
       end
       email += <<-EMAIL
-elemental2-#{m}: Full details at https://diff.revapi.org/?groupId=org.realityforge.com.google.elemental2&artifactId=elemental2-#{m}&old=#{ELEMENTAL2_PREV_VERSION}&new=#{elemental2_version}
+elemental2-#{m}:
+  API Differences: #{apidiff_url('Elemental2', "elemental2-#{m}", ELEMENTAL2_PREV_VERSION, elemental2_version)}
       EMAIL
       email += <<-EMAIL if non_breaking_changes > 0
-  #{non_breaking_changes} non breaking changes.
+  - #{non_breaking_changes} non breaking changes.
       EMAIL
       email += <<-EMAIL if potentially_breaking_changes > 0
-  #{potentially_breaking_changes} potentially breaking changes.
+  - #{potentially_breaking_changes} potentially breaking changes.
       EMAIL
       email += <<-EMAIL if breaking_changes > 0
-  #{breaking_changes} breaking changes.
+  - #{breaking_changes} breaking changes.
       EMAIL
     else
       rm_f output_file
     end
+  end
+
+  if added_header
+    email += <<-EMAIL
+
+The complete set of Elemental2 API differences is available at
+
+  #{apidiff_url('Elemental2', 'elemental2', ELEMENTAL2_PREV_VERSION, elemental2_version)}
+    EMAIL
   end
 
   email += <<-EMAIL
