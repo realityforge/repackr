@@ -12,3 +12,8 @@ end
 def apidiff_url(title, key, old_version, new_version)
   "https://jsinterop.github.io/api-diff/?key=#{key}&title=#{title}&old=#{old_version}&new=#{new_version}"
 end
+
+# Generate local filename for api diff report
+def apidiff_local_file(key, old_version, new_version)
+  "#{product_path('jsinterop', 'site')}/api-diff/data/#{key}/#{old_version}-to-#{new_version}.json"
+end
