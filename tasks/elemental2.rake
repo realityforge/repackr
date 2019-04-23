@@ -216,8 +216,6 @@ end
 
 task 'elemental2:generate_email' do
 
-  # TODO: Generate an API diff as part of the release and publish it somewhere rather than linking to online service
-
   email = <<-EMAIL
 To: google-web-toolkit@googlegroups.com
 Subject: [ANN] (Unofficial) Elemental2 #{elemental2_version} release
