@@ -9,7 +9,7 @@ ELEMENTAL2_UPDATE_UPSTREAM = true
 ELEMENTAL2_PREV_VERSION = '1.0.0-b21-6a027d2'
 
 def elemental2_version
-  "1.0.0-#{get_version_suffix('elemental2')}"
+  "2.#{load_build_number('elemental2')}"
 end
 
 def elemental2_integration_branch
