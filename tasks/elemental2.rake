@@ -109,7 +109,7 @@ task 'elemental2:build' do
           gsub('__GROUP_ID__', ELEMENTAL2_GROUP_ID).
           gsub('__VERSION__', version).
           gsub('__ARTIFICAT_ID__', "elemental2-#{artifact_key}").
-            gsub(<<DEP,<<REPLACEMENT)
+          gsub(<<DEP, <<REPLACEMENT)
     <dependency>
       <groupId>com.google.jsinterop</groupId>
       <artifactId>base</artifactId>
