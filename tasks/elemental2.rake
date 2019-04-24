@@ -316,3 +316,37 @@ task 'elemental2:local_release' => %w(elemental2:download elemental2:build eleme
 
 desc 'Download the latest elemental2 project and push a release to Maven Central'
 task 'elemental2:release' => %w(elemental2:download apidiff:download elemental2:build elemental2:publish elemental2:save_build elemental2:generate_diff elemental2:generate_email)
+
+
+task 'elemental2:generate_diffs' do
+
+  {
+    "1.0.0-b20-bfe6e22" => "1.0.0-b21-6a027d2",
+    "1.0.0-b21-6a027d2" => "2.22",
+    "2.22" => "2.23",
+  }.each_pair do |old_version, new_version|
+    complete_diff = []
+    ELEMENTAL2_MODULES.each do |m|
+      output_file = apidiff_generate("org.realityforge.com.google.elemental2:elemental2-#{m}:jar",
+                                     "elemental2-#{m}",
+                                     old_version,
+                                     new_version)
+
+      complete_diff += JSON.parse(IO.read(output_file))
+    end
+
+    output_file = apidiff_local_file('elemental2', old_version, new_version)
+    mkdir_p File.dirname(output_file)
+    IO.write(output_file, JSON::pretty_generate(complete_diff, :max_nesting => false))
+    in_dir(product_path('jsinterop', 'site')) do
+      sh "git add #{output_file}"
+    end
+
+    in_dir(product_path('jsinterop', 'site')) do
+      sh "git commit -m \"Update Elemental2 API differences between versions #{old_version} and #{new_version}\""
+      sh "git push"
+    end
+  end
+end
+
+task 'XXX' => %w(apidiff:download elemental2:generate_diffs)
