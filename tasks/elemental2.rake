@@ -5,7 +5,7 @@ ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage we
 ELEMENTAL2_BRANCH = 'upstream'
 ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges NameEventHandlerParameters)
 # TODO: This should be automated somehow
-ELEMENTAL2_PREV_VERSION = '1.0.0-b21-6a027d2'
+ELEMENTAL2_PREV_VERSION = '2.22'
 
 def elemental2_version
   "2.#{load_build_number('elemental2')}"
