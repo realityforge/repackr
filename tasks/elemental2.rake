@@ -4,7 +4,6 @@ ELEMENTAL2_GROUP_ID = 'org.realityforge.com.google.elemental2'
 ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage webassembly)
 ELEMENTAL2_BRANCH = 'upstream'
 ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges NameEventHandlerParameters)
-ELEMENTAL2_UPDATE_UPSTREAM = true
 # TODO: This should be automated somehow
 ELEMENTAL2_PREV_VERSION = '1.0.0-b21-6a027d2'
 
@@ -25,15 +24,13 @@ end
 
 task 'elemental2:download' do
   git_clone('jsinterop', 'elemental2', 'https://github.com/realityforge/elemental2.git')
-  if ELEMENTAL2_UPDATE_UPSTREAM
-    in_dir(product_path('jsinterop', 'elemental2')) do
-      `git remote rm upstream`
-      sh 'git remote add upstream  https://github.com/google/elemental2.git'
-      sh 'git fetch upstream --prune'
-      sh 'git checkout upstream'
-      sh 'git reset --hard upstream/master'
-      sh 'git push -f'
-    end
+  in_dir(product_path('jsinterop', 'elemental2')) do
+    `git remote rm upstream`
+    sh 'git remote add upstream  https://github.com/google/elemental2.git'
+    sh 'git fetch upstream --prune'
+    sh 'git checkout upstream'
+    sh 'git reset --hard upstream/master'
+    sh 'git push -f'
   end
   # Remove all non master local branches
   in_dir(product_path('jsinterop', 'elemental2')) do
