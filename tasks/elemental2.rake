@@ -252,7 +252,7 @@ API Changes relative to Elemental2 version #{ELEMENTAL2_PREV_VERSION}
       end
       email += <<-EMAIL
 elemental2-#{m}:
-  API Differences: #{apidiff_url('Elemental2', "elemental2-#{m}", ELEMENTAL2_PREV_VERSION, elemental2_version)}
+  API Differences: #{apidiff_url("elemental2-#{m}", ELEMENTAL2_PREV_VERSION, elemental2_version)}
       EMAIL
       email += <<-EMAIL if non_breaking_changes > 0
   - #{non_breaking_changes} non breaking changes.
@@ -273,7 +273,7 @@ elemental2-#{m}:
 
 The complete set of Elemental2 API differences is available at
 
-  #{apidiff_url('Elemental2', 'elemental2', ELEMENTAL2_PREV_VERSION, elemental2_version)}
+  #{apidiff_url('elemental2', ELEMENTAL2_PREV_VERSION, elemental2_version)}
     EMAIL
   end
 
