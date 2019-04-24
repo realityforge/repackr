@@ -7,4 +7,4 @@ repositories:
    - https://stocksoftware.jfrog.io/stocksoftware/staging
 
 artifacts:
-  revapi_diff: org.realityforge.revapi.diff:revapi-diff:jar:all:0.05
+  revapi_diff: org.realityforge.revapi.diff:revapi-diff:jar:all:0.06
