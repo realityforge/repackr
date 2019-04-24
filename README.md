@@ -14,14 +14,5 @@ Current projects included in this cycle and their associated tasks are:
 ### On Naming and Versioning
 
 The artifacts are named the same as the artifacts in the original source projects except
-that the group is prefixed with `org.realityforge.` and the version is suffixed with
-`-b[build number]-[commit hash]`. The version may also have other build qualifiers such
-as `-BETA1`, `-stable`, `-RC1`, removed
-
-i.e. if the original Maven coordinates for an artifact are:
-
-    com.biz.mylib:mylib-core:jar:1.0.0-RC1
-
-Then a coordinate for a release could be
-
-    org.realityforge.com.biz.mylib:elmylib-core:jar:1.0.0-b16-6897368
+that the group is prefixed with `org.realityforge.` and the version scheme is different and
+usually based on build number.
