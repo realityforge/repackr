@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/util')
 ELEMENTAL2_GROUP_ID = 'org.realityforge.com.google.elemental2'
 ELEMENTAL2_MODULES = %w(core dom indexeddb media promise svg webgl webstorage webassembly)
 ELEMENTAL2_BRANCH = 'upstream'
-ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges NameEventHandlerParameters)
+ELEMENTAL2_BRANCHES_TO_MERGE = %w(VertispanChanges NameEventHandlerParameters Add_mediasource.js_to_dom_artifact)
 # TODO: This should be automated somehow
 ELEMENTAL2_PREV_VERSION = '2.22'
 
