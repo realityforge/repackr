@@ -220,7 +220,7 @@ Subject: [ANN] (Unofficial) Elemental2 #{elemental2_version} release
 Elemental2 provides type checked access to browser APIs for Java
 code. This is done by using closure extern files and generating
 JsTypes, which are part of the new JsInterop specification that
-is both implemented in GWT and J2CL.
+is implemented in both GWT and J2CL.
 
 https://github.com/google/elemental2
 
