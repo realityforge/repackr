@@ -4,8 +4,8 @@
     "commit": "771115c"
   },
   "elemental2": {
-    "commit": "07bef47",
-    "buildNumber": 24,
+    "commit": "e8e21c1",
+    "buildNumber": 25,
     "branch": "upstream"
   },
   "jsinterop-generator": {
