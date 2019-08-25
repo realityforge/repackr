@@ -2,6 +2,7 @@ require 'json'
 require 'mcrt'
 
 WORKSPACE_DIR = File.expand_path(File.dirname(__FILE__) + '/..')
+BAZEL_CMD='/usr/local/bin/bazelisk'
 
 def in_dir(dir)
   current = Dir.pwd

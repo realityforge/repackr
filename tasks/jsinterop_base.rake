@@ -72,8 +72,8 @@ task 'base:build' do
   in_dir(product_path) do
     ['', '-j2cl'].each do |suffix|
       unless ENV['BAZEL'] == 'no'
-        sh 'bazel clean --expunge'
-        sh "bazel build //java/jsinterop/base:libbase#{suffix}.jar //java/jsinterop/base:libbase#{suffix}-src.jar"
+        sh "#{BAZEL_CMD} clean --expunge"
+        sh "#{BAZEL_CMD} build //java/jsinterop/base:libbase#{suffix}.jar //java/jsinterop/base:libbase#{suffix}-src.jar"
       end
       version = base_version
 

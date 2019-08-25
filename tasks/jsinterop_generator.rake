@@ -70,8 +70,8 @@ task 'generator:build' do
   product_path = product_path('jsinterop', 'jsinterop-generator')
   in_dir(product_path) do
     unless ENV['BAZEL'] == 'no'
-      sh 'bazel clean --expunge'
-      sh 'bazel build //...'
+      sh "#{BAZEL_CMD} clean --expunge"
+      sh "#{BAZEL_CMD} build //..."
     end
     version = generator_version
 
@@ -86,8 +86,8 @@ task 'generator:build' do
     GENERATOR_JARS.each do |jar_key|
       artifact_path = "bazel-bin/java/jsinterop/generator/#{jar_key}"
       unless ENV['BAZEL'] == 'no'
-        sh "bazel build //java/jsinterop/generator/#{jar_key}"
-        sh "bazel build //java/jsinterop/generator/#{jar_key.gsub('.jar', '-src.jar')}"
+        sh "#{BAZEL_CMD} build //java/jsinterop/generator/#{jar_key}"
+        sh "#{BAZEL_CMD} build //java/jsinterop/generator/#{jar_key.gsub('.jar', '-src.jar')}"
       end
 
       in_dir(src_dir) do
@@ -99,7 +99,7 @@ task 'generator:build' do
       end
     end
 
-    sh 'bazel build //java/jsinterop/generator/closure:ClosureJsinteropGenerator_deploy.jar'
+    sh "#{BAZEL_CMD} build //java/jsinterop/generator/closure:ClosureJsinteropGenerator_deploy.jar"
 
     sh "find #{src_dir} -type f -name \"*.java\" | xargs javadoc -d #{javadoc_dir}"
 
