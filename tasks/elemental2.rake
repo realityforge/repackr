@@ -106,7 +106,9 @@ task 'elemental2:build' do
           gsub('__GROUP_ID__', ELEMENTAL2_GROUP_ID).
           gsub('__VERSION__', version).
           gsub('__ARTIFICAT_ID__', "elemental2-#{artifact_key}").
-          gsub(<<DEP, <<REPLACEMENT)
+      if false
+        # Should no longer need to replace jsinterop-base ...
+        pom = pom.gsub(<<DEP, <<REPLACEMENT)
     <dependency>
       <groupId>com.google.jsinterop</groupId>
       <artifactId>base</artifactId>
@@ -119,6 +121,7 @@ DEP
       <version>#{base_version}</version>
     </dependency>
 REPLACEMENT
+      end
 
       pom_artifact = elemental2_output_artifact(artifact_key, :pom)
       IO.write(pom_artifact, pom)
