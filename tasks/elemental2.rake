@@ -105,7 +105,7 @@ task 'elemental2:build' do
         IO.read("maven/pom-#{artifact_key}.xml").
           gsub('__GROUP_ID__', ELEMENTAL2_GROUP_ID).
           gsub('__VERSION__', version).
-          gsub('__ARTIFICAT_ID__', "elemental2-#{artifact_key}").
+          gsub('__ARTIFACT_ID__', "elemental2-#{artifact_key}")
       if false
         # Should no longer need to replace jsinterop-base ...
         pom = pom.gsub(<<DEP, <<REPLACEMENT)
