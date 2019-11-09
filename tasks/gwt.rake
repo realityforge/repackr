@@ -5,7 +5,7 @@ require File.expand_path(File.dirname(__FILE__) + '/util')
 GWT_SNAPSHOT_URL = 'https://oss.sonatype.org/content/repositories/google-snapshots'
 
 GWT_PREV_VERSION = '2.8.2'
-GWT_TARGET_VERSION = 'v20191108'
+GWT_TARGET_VERSION = '2.8.2-v20191108'
 # Note: gwt is just a pom dependency
 GWT_ARTIFACTS = [
     %w(com.google.gwt gwt-codeserver 20191108.055205-844),
