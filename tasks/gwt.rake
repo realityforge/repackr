@@ -107,7 +107,7 @@ def gwt_artifact_def(group_id, artifact_id, type, classifier = nil)
                    :version => GWT_TARGET_VERSION,
                    :type => type,
                    :classifier => classifier}).
-      from(dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, ".#{type}")))
+      from(dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, "#{classifier.nil? ? '' : "-#{classifier}"}.#{type}")))
 end
 
 
