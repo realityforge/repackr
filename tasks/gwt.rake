@@ -8,6 +8,8 @@ GWT_PREV_VERSION = '2.8.2'
 GWT_TARGET_VERSION = '2.8.2-v20191108'
 # Note: gwt is just a pom dependency
 GWT_ARTIFACTS = [
+    %w(com.google.jsinterop jsinterop-annotations 20191109.055159-844),
+    %w(com.google.jsinterop jsinterop 20191109.055156-844),
     %w(com.google.gwt gwt-codeserver 20191108.055205-844),
     %w(com.google.gwt gwt-elemental 20191108.055211-844),
     %w(com.google.gwt gwt-servlet 20191108.055158-844),
@@ -60,13 +62,14 @@ task 'gwt:patch_poms' do
     pom_file = dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, '.pom'))
     contents = IO.read(pom_file).
         # First replace com.google.jsinterop pom version
-        gsub('                <version>HEAD-SNAPSHOT</version>', '                <version>1.0.2</version>').
+        gsub('                <version>HEAD-SNAPSHOT</version>', "                <version>#{GWT_TARGET_VERSION}</version>").
         # Then replace the version to reference the parent pom
         gsub('        <version>HEAD-SNAPSHOT</version>', "        <version>#{GWT_TARGET_VERSION}</version>").
         # Then replace the version of actual pom
         gsub('    <version>HEAD-SNAPSHOT</version>', "    <version>#{GWT_TARGET_VERSION}</version>").
         # Then update the groupIds
         gsub('<groupId>com.google.gwt</groupId>', '<groupId>org.realityforge.com.google.gwt</groupId>').
+        gsub('<groupId>com.google.jsinterop</groupId>', '<groupId>org.realityforge.com.google.jsinterop</groupId>').
         gsub('<groupId>com.google.web.bindery</groupId>', '<groupId>org.realityforge.com.google.web.bindery</groupId>')
 
     IO.write(pom_file, contents)
@@ -82,7 +85,7 @@ def gwt_sign(group_id, artifact_id, suffix)
 end
 
 def is_pom_artifact?(artifact_id)
-  'gwt' == artifact_id || 'requestfactory' == artifact_id
+  'gwt' == artifact_id || 'requestfactory' == artifact_id || 'jsinterop' == artifact_id
 end
 
 task 'gwt:sign' do
