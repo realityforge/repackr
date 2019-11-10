@@ -46,7 +46,7 @@ task 'gwt:download' do
   GWT_ARTIFACTS.each do |data|
     group_id, artifact_id, version = data
     gwt_download_file_set(group_id, artifact_id, version, '.pom')
-    unless 'gwt' == artifact_id || 'requestfactory' == artifact_id
+    unless is_pom_artifact?(artifact_id)
       gwt_download_file_set(group_id, artifact_id, version, '.jar')
       gwt_download_file_set(group_id, artifact_id, version, '-sources.jar')
       gwt_download_file_set(group_id, artifact_id, version, '-javadoc.jar')
@@ -80,12 +80,16 @@ def gwt_sign(group_id, artifact_id, suffix)
   sign_task(dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, suffix)))
 end
 
+def is_pom_artifact?(artifact_id)
+  'gwt' == artifact_id || 'requestfactory' == artifact_id
+end
+
 task 'gwt:sign' do
   # Needs to run after poms have been patched
   GWT_ARTIFACTS.each do |data|
     group_id, artifact_id, version = data
     gwt_sign(group_id, artifact_id, '.pom')
-    unless 'gwt' == artifact_id || 'requestfactory' == artifact_id
+    unless is_pom_artifact?(artifact_id)
       gwt_sign(group_id, artifact_id, '.jar')
       gwt_sign(group_id, artifact_id, '-sources.jar')
       gwt_sign(group_id, artifact_id, '-javadoc.jar')
@@ -107,11 +111,10 @@ def gwt_tasks_for_modules
   tasks = []
   GWT_ARTIFACTS.each do |data|
     group_id, artifact_id, version = data
-    type = 'gwt' == artifact_id || 'requestfactory' == artifact_id ? 'pom' : 'jar'
 
     tasks << gwt_artifact_def(group_id, artifact_id, 'pom')
     tasks << gwt_artifact_def(group_id, artifact_id, 'pom.asc')
-    unless type == 'pom'
+    unless is_pom_artifact?(artifact_id)
       tasks << gwt_artifact_def(group_id, artifact_id, 'jar')
       tasks << gwt_artifact_def(group_id, artifact_id, 'jar.asc')
       tasks << gwt_artifact_def(group_id, artifact_id, 'jar', 'sources')
