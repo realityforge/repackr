@@ -77,7 +77,8 @@ task 'gwt:patch_poms' do
 end
 
 def gwt_sign(group_id, artifact_id, suffix)
-  sign_task(dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, suffix)))
+  source_filename = dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, suffix))
+  sign_task(source_filename) unless File.exist?("#{source_filename}.asc")
 end
 
 def is_pom_artifact?(artifact_id)
