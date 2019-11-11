@@ -229,6 +229,9 @@ https://github.com/google/elemental2
 
 This is an unofficial release to Maven Central under a different groupId.
 Please don't bug the original authors. Versions are released on demand.
+
+It should be noted that this version DOES NOT work with GWT 2.8.2 and requires
+either a SNAPSHOT version or the unofficial GWT 2.8.2-v20191108 release.
   EMAIL
 
   require 'json'
