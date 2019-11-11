@@ -140,6 +140,15 @@ task 'gwt:install' do
   end
 end
 
+task 'gwt:stage' do
+  repositories.release_to = {
+      :url => 'https://stocksoftware.jfrog.io/stocksoftware/staging',
+      :username => ENV['STAGING_USERNAME'],
+      :password => ENV['STAGING_PASSWORD'] }
+  gwt_tasks_for_modules.select {|t| t.type != :pom}.each(&:upload)
+  repositories.release_to = nil
+end
+
 RepackrMavenCentralReleaseTool.define_publish_tasks('gwt',
                                                     :profile_name => 'org.realityforge',
                                                     :username => 'realityforge') do
@@ -149,6 +158,9 @@ end
 
 desc 'Download the latest gwt project and push a local release'
 task 'gwt:local_release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:install)
+
+desc 'Download the latest gwt project and push a staging release'
+task 'gwt:stage_release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:stage)
 
 desc 'Download the latest gwt project and push a release'
 task 'gwt:release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:publish)
