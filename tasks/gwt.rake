@@ -156,6 +156,57 @@ RepackrMavenCentralReleaseTool.define_publish_tasks('gwt',
   gwt_tasks_for_modules.select {|t| t.type != :pom}.each(&:upload)
 end
 
+task 'gwt:generate_email' do
+
+  email = <<-EMAIL
+To: google-web-toolkit@googlegroups.com
+Subject: [ANN] (Unofficial) GWT #{GWT_TARGET_VERSION} release
+
+GWT is a development toolkit for building and optimizing complex
+browser-based applications. Its goal is to enable productive
+development of high-performance web applications without the
+developer having to be an expert in browser quirks,
+XMLHttpRequest, and JavaScript. It’s open-source, completely
+free, and used by thousands of developers around the world.
+
+https://github.com/gwtproject/gwt
+
+This is an unofficial release to Maven Central with the groupId
+prefixed with "org.realityforge.". The intent is to get the current
+version of GWT into more people's hands earlier. Please don't bug
+the GWT project. Versions are released on demand.
+
+The one significant difference in the way that it has been packaged
+is to release the jsinterop-annotations artifact with the coordinate
+
+org.realityforge.com.google.jsinterop:jsinterop-annotations:jar:#{GWT_TARGET_VERSION}
+
+For most Maven users, it should be sufficient to update your
+dependency declarations to something like:
+
+    <dependency>
+      <groupId>org.realityforge.com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>#{GWT_TARGET_VERSION}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.realityforge.com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>#{GWT_TARGET_VERSION}</version>
+    </dependency>
+
+Hope this helps,
+
+Peter Donald
+  EMAIL
+
+  File.open 'emails/gwt-email.txt', 'w' do |file|
+    file.write email
+  end
+  puts 'Announce email template in emails/gwt-email.txt'
+  puts email
+end
+
 desc 'Download the latest gwt project and push a local release'
 task 'gwt:local_release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:install)
 
@@ -163,4 +214,4 @@ desc 'Download the latest gwt project and push a staging release'
 task 'gwt:stage_release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:stage)
 
 desc 'Download the latest gwt project and push a release'
-task 'gwt:release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:publish)
+task 'gwt:release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:publish gwt:generate_email)
