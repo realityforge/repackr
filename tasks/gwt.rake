@@ -1,217 +1,102 @@
-require 'open-uri'
-require 'digest'
-require File.expand_path(File.dirname(__FILE__) + '/util')
+#
+# Enhance the Buildr project to compile gwt sources.
+# For each of the discovered gwt modules, this task will create
+# a synthetic gwt module that includes a single entrypoint to
+# compile against. It will also create a gwt classifier jar
+# that includes all the sources.
+#
+def gwt_enhance(project, options = {})
+  modules_complete = !!options[:modules_complete]
+  package_jars = options[:package_jars].nil? ? true : !!options[:package_jars]
 
-GWT_SNAPSHOT_URL = 'https://oss.sonatype.org/content/repositories/google-snapshots'
-
-GWT_PREV_VERSION = '2.8.2'
-GWT_TARGET_VERSION = '2.8.2-v20191108'
-# Note: gwt is just a pom dependency
-GWT_ARTIFACTS = [
-    %w(com.google.jsinterop jsinterop-annotations 20191109.055159-844),
-    %w(com.google.jsinterop jsinterop 20191109.055156-844),
-    %w(com.google.gwt gwt-codeserver 20191108.055205-844),
-    %w(com.google.gwt gwt-elemental 20191108.055211-844),
-    %w(com.google.gwt gwt-servlet 20191108.055158-844),
-    %w(com.google.gwt gwt-dev 20191108.055139-844),
-    %w(com.google.gwt gwt-user 20191108.055147-844),
-    %w(com.google.gwt gwt 20191108.055134-844),
-    %w(com.google.web.bindery requestfactory 20191108.055218-844),
-    %w(com.google.web.bindery requestfactory-apt 20191108.055234-844),
-    %w(com.google.web.bindery requestfactory-client 20191108.055221-844),
-    %w(com.google.web.bindery requestfactory-server 20191108.055228-844)
-]
-
-def gwt_download_file(file_path, output_filepath)
-  source_url = "#{GWT_SNAPSHOT_URL}/#{file_path}"
-  target_file = dist_dir(output_filepath)
-  unless File.exist?(target_file)
-    FileUtils.mkdir_p File.dirname(target_file)
-    puts "Downloading #{source_url} to #{target_file}"
-    IO.copy_stream(open(source_url), target_file)
+  extra_deps = (project.iml.main_generated_resource_directories.flatten + (options[:extra_deps] || [])).compact.collect do |a|
+    a.is_a?(String) ? file(a) : a
+  end + project.iml.main_generated_source_directories.flatten.compact.collect do |a|
+    a.is_a?(String) ? file(a) : a
   end
-end
 
-def gwt_calc_target_path(group_id, artifact_id, version, suffix)
-  "org/realityforge/#{group_id.gsub('.', '/')}/#{artifact_id}/#{version}/#{artifact_id}-#{version}#{suffix}"
-end
+  if project.enable_annotation_processor?
+    extra_deps += [project.file(project._(:generated, 'processors/main/java'))]
+  end
 
-def gwt_download_file_set(group_id, artifact_id, version, suffix)
-  file_path = "#{group_id.gsub('.', '/')}/#{artifact_id}/HEAD-SNAPSHOT/#{artifact_id}-HEAD-#{version}#{suffix}"
-  target_path = gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, suffix)
-  gwt_download_file(file_path, target_path)
-  gwt_download_file("#{file_path}.md5", "#{target_path}.md5")
-  gwt_download_file("#{file_path}.sha1", "#{target_path}.sha1")
-end
+  project.compile.with Buildr::GWT.dependencies(project.gwt_detect_version(Buildr.artifacts(:gwt_user)))
 
-task 'gwt:download' do
-  GWT_ARTIFACTS.each do |data|
-    group_id, artifact_id, version = data
-    gwt_download_file_set(group_id, artifact_id, version, '.pom')
-    unless is_pom_artifact?(artifact_id)
-      gwt_download_file_set(group_id, artifact_id, version, '.jar')
-      gwt_download_file_set(group_id, artifact_id, version, '-sources.jar')
-      gwt_download_file_set(group_id, artifact_id, version, '-javadoc.jar')
+  dependencies = project.compile.dependencies + extra_deps
+
+  gwt_modules = options[:gwt_modules] || []
+  source_paths = project.compile.sources + project.iml.main_generated_resource_directories.flatten.compact + project.iml.main_generated_source_directories.flatten.compact
+  source_paths.each do |base_dir|
+    Dir["#{base_dir}/**/*.gwt.xml"].each do |filename|
+      gwt_modules << filename.gsub("#{base_dir}/", '').gsub('.gwt.xml', '').gsub('/', '.')
+    end
+  end if gwt_modules.empty?
+
+  compile_report_dir = options[:compile_report_dir]
+  if modules_complete && compile_report_dir.nil?
+    compile_report_dir = project._(:target, :gwt_compile_reports)
+  end
+
+  unless modules_complete
+    base_synthetic_module_dir = project._(:generated, :synthetic_gwt_module, :main, :resources)
+    t = project.task('gwt_synthetic_module') do
+      gwt_modules.each do |gwt_module|
+        file = "#{base_synthetic_module_dir}/#{gwt_module.gsub('.', '/')}Test.gwt.xml"
+        mkdir_p File.dirname(file)
+        IO.write(file, <<CONTENT)
+<module>
+  <inherits name="#{gwt_module}"/>
+  <inherits name="com.google.gwt.user.User"/>
+  <source path='ignored'/>
+  <collapse-all-properties/>
+</module>
+CONTENT
+      end
+    end
+    dir = project.file(base_synthetic_module_dir => [t.name])
+    dependencies += [dir]
+  end
+
+  # Duplicate the assets as the following gwt task will add compile output to asset path
+  # which we typically do NOT want to include in jar
+  assets = project.assets.paths.dup
+  if ENV['GWT'].nil? || ENV['GWT'] == project.name
+    modules = modules_complete ? gwt_modules : gwt_modules.collect { |gwt_module| "#{gwt_module}Test" }
+    modules.each do |m|
+      gwtc_args = options[:module_gwtc_args].nil? ? nil : options[:module_gwtc_args][m]
+      output_key = options[:output_key] || m
+      project.gwt([m], { :java_args => %w(-Xms512M -Xmx1024M -Dgwt.watchFileChanges=false),
+                         :dependencies => dependencies,
+                         :gwtc_args => gwtc_args,
+                         :skip_merge_gwt_dependencies => true,
+                         :compile_report_dir => compile_report_dir.nil? ? nil : "#{compile_report_dir}/#{output_key}",
+                         :output_key => output_key })
     end
   end
-end
 
-task 'gwt:patch_poms' do
-  GWT_ARTIFACTS.each do |data|
-    group_id, artifact_id, version = data
-    pom_file = dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, '.pom'))
-    contents = IO.read(pom_file).
-        # First replace com.google.jsinterop pom version
-        gsub('                <version>HEAD-SNAPSHOT</version>', "                <version>#{GWT_TARGET_VERSION}</version>").
-        # Then replace the version to reference the parent pom
-        gsub('        <version>HEAD-SNAPSHOT</version>', "        <version>#{GWT_TARGET_VERSION}</version>").
-        # Then replace the version of actual pom
-        gsub('    <version>HEAD-SNAPSHOT</version>', "    <version>#{GWT_TARGET_VERSION}</version>").
-        # Then update the groupIds
-        gsub('<groupId>com.google.gwt</groupId>', '<groupId>org.realityforge.com.google.gwt</groupId>').
-        gsub('<groupId>com.google.jsinterop</groupId>', '<groupId>org.realityforge.com.google.jsinterop</groupId>').
-        gsub('<groupId>com.google.web.bindery</groupId>', '<groupId>org.realityforge.com.google.web.bindery</groupId>')
-
-    IO.write(pom_file, contents)
-
-    IO.write("#{pom_file}.md5", Digest::MD5.hexdigest(contents))
-    IO.write("#{pom_file}.sha1", Digest::SHA1.hexdigest(contents))
-  end
-end
-
-def gwt_sign(group_id, artifact_id, suffix)
-  source_filename = dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, suffix))
-  sign_task(source_filename) unless File.exist?("#{source_filename}.asc")
-end
-
-def is_pom_artifact?(artifact_id)
-  'gwt' == artifact_id || 'requestfactory' == artifact_id || 'jsinterop' == artifact_id
-end
-
-task 'gwt:sign' do
-  # Needs to run after poms have been patched
-  GWT_ARTIFACTS.each do |data|
-    group_id, artifact_id, version = data
-    gwt_sign(group_id, artifact_id, '.pom')
-    unless is_pom_artifact?(artifact_id)
-      gwt_sign(group_id, artifact_id, '.jar')
-      gwt_sign(group_id, artifact_id, '-sources.jar')
-      gwt_sign(group_id, artifact_id, '-javadoc.jar')
+  project.package(:jar).tap do |j|
+    extra_deps.each do |dep|
+      j.enhance([dep])
+      Dir["#{"#{dep}/*"}"].each do |path|
+        j.include(path)
+      end
     end
-  end
-end
-
-def gwt_artifact_def(group_id, artifact_id, type, classifier = nil)
-  Buildr.artifact({:group => "org.realityforge.#{group_id}",
-                   :id => artifact_id,
-                   :version => GWT_TARGET_VERSION,
-                   :type => type,
-                   :classifier => classifier}).
-      from(dist_dir(gwt_calc_target_path(group_id, artifact_id, GWT_TARGET_VERSION, "#{classifier.nil? ? '' : "-#{classifier}"}.#{type}")))
-end
-
-
-def gwt_tasks_for_modules
-  tasks = []
-  GWT_ARTIFACTS.each do |data|
-    group_id, artifact_id, version = data
-
-    tasks << gwt_artifact_def(group_id, artifact_id, 'pom')
-    tasks << gwt_artifact_def(group_id, artifact_id, 'pom.asc')
-    unless is_pom_artifact?(artifact_id)
-      tasks << gwt_artifact_def(group_id, artifact_id, 'jar')
-      tasks << gwt_artifact_def(group_id, artifact_id, 'jar.asc')
-      tasks << gwt_artifact_def(group_id, artifact_id, 'jar', 'sources')
-      tasks << gwt_artifact_def(group_id, artifact_id, 'jar.asc', 'sources')
-      tasks << gwt_artifact_def(group_id, artifact_id, 'jar', 'javadoc')
-      tasks << gwt_artifact_def(group_id, artifact_id, 'jar.asc', 'javadoc')
+    if project.enable_annotation_processor?
+      Dir["#{project._(:generated, 'processors/main/java/*')}"].each do |path|
+        j.include(path)
+      end
     end
+    assets.each do |path|
+      j.include("#{path}/*")
+    end
+    j.include("#{project._(:source, :main, :java)}/*")
+  end if package_jars
+
+  config = {}
+  gwt_modules.each do |gwt_module|
+    config[gwt_module] = false
   end
-  tasks
+  project.iml.add_gwt_facet(config, :settings => {
+    :compilerMaxHeapSize => '1024',
+    :compilerParameters => '-draftCompile -localWorkers 2 -strict'
+  }, :gwt_dev_artifact => :gwt_dev)
 end
-
-task 'gwt:install' do
-  gwt_tasks_for_modules.each do |task|
-    in_local_repository = Buildr.repositories.locate(task)
-    rm_f in_local_repository
-    mkdir_p File.dirname(in_local_repository)
-    cp task.instance_variable_get('@from'), in_local_repository, :preserve => false
-    info "Installed #{task.name} to #{in_local_repository}"
-  end
-end
-
-task 'gwt:stage' do
-  repositories.release_to = {
-      :url => 'https://stocksoftware.jfrog.io/stocksoftware/staging',
-      :username => ENV['STAGING_USERNAME'],
-      :password => ENV['STAGING_PASSWORD'] }
-  gwt_tasks_for_modules.select {|t| t.type != :pom}.each(&:upload)
-  repositories.release_to = nil
-end
-
-RepackrMavenCentralReleaseTool.define_publish_tasks('gwt',
-                                                    :profile_name => 'org.realityforge',
-                                                    :username => 'realityforge') do
-  task('gwt:install').invoke
-  gwt_tasks_for_modules.select {|t| t.type != :pom}.each(&:upload)
-end
-
-task 'gwt:generate_email' do
-
-  email = <<-EMAIL
-To: google-web-toolkit@googlegroups.com
-Subject: [ANN] (Unofficial) GWT #{GWT_TARGET_VERSION} release
-
-GWT is a development toolkit for building and optimizing complex
-browser-based applications. Its goal is to enable productive
-development of high-performance web applications without the
-developer having to be an expert in browser quirks,
-XMLHttpRequest, and JavaScript. It’s open-source, completely
-free, and used by thousands of developers around the world.
-
-https://github.com/gwtproject/gwt
-
-This is an unofficial release to Maven Central with the groupId
-prefixed with "org.realityforge.". The intent is to get the current
-version of GWT into more people's hands earlier. Please don't bug
-the GWT project. Versions are released on demand.
-
-The one significant difference in the way that it has been packaged
-is to release the jsinterop-annotations artifact with the coordinate
-
-org.realityforge.com.google.jsinterop:jsinterop-annotations:jar:#{GWT_TARGET_VERSION}
-
-For most Maven users, it should be sufficient to update your
-dependency declarations to something like:
-
-    <dependency>
-      <groupId>org.realityforge.com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>#{GWT_TARGET_VERSION}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.realityforge.com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>#{GWT_TARGET_VERSION}</version>
-    </dependency>
-
-Hope this helps,
-
-Peter Donald
-  EMAIL
-
-  File.open 'emails/gwt-email.txt', 'w' do |file|
-    file.write email
-  end
-  puts 'Announce email template in emails/gwt-email.txt'
-  puts email
-end
-
-desc 'Download the latest gwt project and push a local release'
-task 'gwt:local_release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:install)
-
-desc 'Download the latest gwt project and push a staging release'
-task 'gwt:stage_release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:stage)
-
-desc 'Download the latest gwt project and push a release'
-task 'gwt:release' => %w(gwt:download gwt:patch_poms gwt:sign gwt:publish gwt:generate_email)
