@@ -59,11 +59,11 @@ GEM
       addressable (>= 2.3.5)
       faraday (> 0.8, < 2.0)
     xml-simple (1.1.5)
-    zapwhite (2.18.0)
+    zapwhite (2.19.0)
       gitattributes (= 2.9.0)
 
 PLATFORMS
-  ruby
+  x86_64-darwin-20
 
 DEPENDENCIES
   braid (= 1.1.2)
@@ -71,7 +71,7 @@ DEPENDENCIES
   mcrt (= 1.15.0)
   netrc (~> 0.11)
   octokit (~> 4.0)
-  zapwhite (= 2.18.0)
+  zapwhite (= 2.19.0)
 
 BUNDLED WITH
-   2.1.4
+   2.2.9
